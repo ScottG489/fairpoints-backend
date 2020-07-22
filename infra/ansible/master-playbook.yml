@@ -1,0 +1,51 @@
+- hosts: all
+  become: yes
+  gather_facts: no
+  vars_files:
+    - vars.yml
+  pre_tasks:
+    - name: Wait for any possibly running unattended upgrade to finish
+      raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
+    - name: Update apt
+      raw: apt update ; apt update
+    - name: Install python2 (needed for ansible) and acl for timezone setup
+      raw: apt install -y python acl
+
+  tasks:
+  # Necessary because we turn it off for python install pre_task
+  - name: Gathering facts
+    setup:
+
+  - name: Resize filesystem if it has grown
+    become: yes
+    shell: |
+      sudo growpart /dev/xvda 1
+      sudo resize2fs /dev/xvda1
+
+  - name: Install packages
+    package:
+      name:
+        - docker.io
+
+  # TODO: We're going to do it this way because the ansible docker module was a pain to set up
+  # TODO:   because it needs to be installed via pip (python2) which was a pain to install
+  # TODO: I'm not sure why I need to manually pull here but it doesn't seem to pick up the latest
+  # TODO:   change otherwise.
+  - name: Run application container
+    become: yes
+    shell: |
+      docker rm --force {{ container_name }}
+      docker pull {{ image_name }}
+      docker run --detach \
+        -p 80:8080 \
+        -p 8081:8081 \
+        --name {{ container_name }} {{ image_name }}
+
+  - name: Wait for service to be healthy
+    uri:
+      url: "http://localhost:8081/healthcheck"
+      status_code: 200
+    register: result
+    until: result.status == 200
+    retries: 30
+    delay: 1

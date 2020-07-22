@@ -1,0 +1,4 @@
+installDist {
+    applicationName = 'start-server'
+    destinationDir = new File("$buildDir/install/service")
+}

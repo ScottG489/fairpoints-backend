@@ -1,0 +1,3 @@
+---
+container_name: debatable-backend
+image_name: scottg489/debatable-backend:latest

@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.ajoberstar.grgit' version '4.0.2'
+}
+
+mainClassName = 'debatable.DebatableBackendApplication'
+
+dependencies {
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+
+    compile group: 'io.dropwizard', name: 'dropwizard-core', version: '2.0.10'
+}
+
+apply from: 'gradle/install.gradle'
+apply from: 'gradle/version.gradle'
+apply from: 'gradle/unit-test.gradle'
+apply from: 'gradle/acceptance-test.gradle'
+
+repositories {
+    jcenter()
+}
