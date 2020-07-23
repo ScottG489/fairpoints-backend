@@ -8,4 +8,5 @@ task generateVersionResourceFile {
         outputFile.text = "version=${version}"
     }
 }
+
 sourceSets.main.output.dir generatedResourceDir, builtBy: generateVersionResourceFile

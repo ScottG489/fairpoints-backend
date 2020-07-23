@@ -26,6 +26,29 @@ setup_credentials() {
   chmod 400 /root/.ssh/mainkeypair.pem
 }
 
+setup_token_server_creds() {
+  set +x
+  local ROOT_DIR
+  local TWILIO_ACCOUNT_SID
+  local TWILIO_API_KEY
+  local TWILIO_API_SECRET
+  local TWILIO_CHAT_SERVICE_SID
+
+  readonly ROOT_DIR=$(get_git_root_dir)
+
+  readonly TWILIO_ACCOUNT_SID=$(echo -n $1 | jq -r .TWILIO_ACCOUNT_SID | base64 --decode)
+  readonly TWILIO_API_KEY=$(echo -n $1 | jq -r .TWILIO_API_KEY | base64 --decode)
+  readonly TWILIO_API_SECRET=$(echo -n $1 | jq -r .TWILIO_API_SECRET | base64 --decode)
+  readonly TWILIO_CHAT_SERVICE_SID=$(echo -n $1 | jq -r .TWILIO_CHAT_SERVICE_SID | base64 --decode)
+
+  {
+    echo "twilio_account_sid: $TWILIO_ACCOUNT_SID"
+    echo "twilio_api_key: $TWILIO_API_KEY"
+    echo "twilio_api_secret: $TWILIO_API_SECRET"
+    echo "twilio_chat_service_sid: $TWILIO_CHAT_SERVICE_SID"
+  } >> "$ROOT_DIR/infra/ansible/vars.yml"
+}
+
 build_push_application() {
   local ROOT_DIR
   local DOCKER_IMAGE_NAME
@@ -67,6 +90,30 @@ tf_apply() {
   cd "$ROOT_DIR/$RELATIVE_PATH_TO_TF_DIR"
 
   terraform init
+  terraform plan
+  terraform apply --auto-approve
+}
+
+# TODO: This and the import we need to do is a hack. It is needed because this project share the
+# TODO:   same hosted zone. We need to add the api subdomain but can't manage the zone ourselves
+# TODO:   because the frontend project does. Need to figure out a way to handle this better
+tf_prod_apply() {
+  local ROOT_DIR
+  local RELATIVE_PATH_TO_TF_DIR
+  local EXISTING_ZONE_ID
+
+  readonly ROOT_DIR=$(get_git_root_dir)
+  readonly RELATIVE_PATH_TO_TF_DIR=$1
+
+  cd "$ROOT_DIR/$RELATIVE_PATH_TO_TF_DIR"
+
+  terraform init
+
+  readonly EXISTING_ZONE_ID=$(aws route53 list-hosted-zones-by-name --max-items 1 --dns-name debate-table.com \
+  | jq --raw-output '.HostedZones[0].Id')
+  [[ -n $EXISTING_ZONE_ID ]]
+  terraform import module.debatable_backend.aws_route53_zone.r53_zone "$EXISTING_ZONE_ID"
+
   terraform plan
   terraform apply --auto-approve
 }

@@ -39,6 +39,10 @@
       docker run --detach \
         -p 80:8080 \
         -p 8081:8081 \
+        -e TWILIO_ACCOUNT_SID={{ twilio_account_sid }} \
+        -e TWILIO_API_KEY={{ twilio_api_key }} \
+        -e TWILIO_API_SECRET={{ twilio_api_secret }} \
+        -e TWILIO_CHAT_SERVICE_SID={{ twilio_chat_service_sid }} \
         --name {{ container_name }} {{ image_name }}
 
   - name: Wait for service to be healthy

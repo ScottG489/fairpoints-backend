@@ -1,0 +1,4 @@
+twilioAccountSid: ${TWILIO_ACCOUNT_SID}
+twilioApiKey: ${TWILIO_API_KEY}
+twilioApiSecret: ${TWILIO_API_SECRET}
+twilioChatServiceSid: ${TWILIO_CHAT_SERVICE_SID}

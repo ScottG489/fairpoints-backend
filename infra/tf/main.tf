@@ -21,13 +21,13 @@ module "helpers_spot_instance_ssh" {
   volume_size = var.volume_size
 }
 
-// TODO: Disabled since this conflicts with infra managed by frontend project
-//module "debatable_backend" {
-//  source = "./modules/debatable_backend_core"
-//  domain_name = var.domain_name
-//  public_ip = module.helpers_spot_instance_ssh.public_ip
-//}
-//
+module "debatable_backend" {
+  source = "./modules/debatable_backend_core"
+  domain_name = var.domain_name
+  public_ip = module.helpers_spot_instance_ssh.public_ip
+}
+
+// TODO: It's hacky but since we use but don't manage the hosted zone. The frontend project does.
 //module "helpers_route53_domain_name_servers" {
 //  source  = "ScottG489/helpers/aws//modules/route53_domain_name_servers"
 //  version = "0.0.4"
