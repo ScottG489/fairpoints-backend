@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
-@Path("/chat")
+@Path("/chat/channel")
 @Slf4j
 public class ChatResource {
     public static final Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topics = new HashMap<>();
