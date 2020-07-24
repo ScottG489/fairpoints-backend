@@ -1,6 +1,7 @@
 package debatable;
 
 import debatable.health.VersionCheck;
+import debatable.resources.ChatResource;
 import debatable.resources.TokenResource;
 import debatable.resources.filter.EveryResponseFilter;
 import io.dropwizard.Application;
@@ -37,6 +38,7 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
                 configuration.getTwilioApiKey(),
                 configuration.getTwilioApiSecret(),
                 configuration.getTwilioChatServiceSid()));
+        environment.jersey().register(new ChatResource());
 
         environment.healthChecks().register("version", new VersionCheck());
     }

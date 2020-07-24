@@ -1,3 +1,5 @@
+config-local.yml
+
 .gradle
 /build
 out
