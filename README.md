@@ -1,4 +1,6 @@
 # debatable-backend
+![CI](https://github.com/ScottG489/debatable-backend/workflows/CI/badge.svg)
+
 Backend for debatable frontend project
 
 ## Development
