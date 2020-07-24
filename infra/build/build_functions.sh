@@ -112,7 +112,7 @@ tf_prod_apply() {
   readonly EXISTING_ZONE_ID=$(aws route53 list-hosted-zones-by-name --max-items 1 --dns-name debate-table.com \
   | jq --raw-output '.HostedZones[0].Id')
   [[ -n $EXISTING_ZONE_ID ]]
-  terraform import module.debatable_backend.aws_route53_zone.r53_zone "$EXISTING_ZONE_ID"
+  terraform import module.debatable_backend.aws_route53_zone.r53_zone "$EXISTING_ZONE_ID" || true
 
   terraform plan
   terraform apply --auto-approve
