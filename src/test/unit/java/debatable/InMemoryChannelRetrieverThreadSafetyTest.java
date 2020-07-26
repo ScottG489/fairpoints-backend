@@ -4,29 +4,33 @@ import debatable.core.Channel;
 import debatable.core.InMemoryChannelRetriever;
 import debatable.core.Topic;
 import debatable.core.Viewpoint;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 // NOTE: Since the in memory implementation is deprecated this is mostly for demonstrative
 @RunWith(Parameterized.class)
 public class InMemoryChannelRetrieverThreadSafetyTest {
     private static final List<List<Object>> topicsAndViewpoints = new ArrayList<>();
+    private InMemoryChannelRetriever inMemoryChannelRetriever;
 
     @Parameterized.Parameters
     public static Object[][] data() {
         return new Object[10][0];
+    }
+
+    @Before
+    public void before() {
+        inMemoryChannelRetriever = getChannelRetriever();
     }
 
     @Test
@@ -34,19 +38,19 @@ public class InMemoryChannelRetrieverThreadSafetyTest {
         int numberOfThreads = 1000;
         populate(numberOfThreads);
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
-        for (List<Object> l: topicsAndViewpoints) {
+        for (List<Object> l : topicsAndViewpoints) {
             service.execute(() -> {
-                InMemoryChannelRetriever.getChannel((Topic) l.get(0), (Viewpoint) l.get(1));
+                inMemoryChannelRetriever.getChannel((Topic) l.get(0), (Viewpoint) l.get(1));
             });
         }
         service.shutdown();
         service.awaitTermination(10000, TimeUnit.SECONDS);
 
-        HashMap<Viewpoint, LinkedList<Channel>> topicA = InMemoryChannelRetriever.topics.get(new Topic("topicA"));
+        HashMap<Viewpoint, LinkedList<Channel>> topicA = inMemoryChannelRetriever.topics.get(new Topic("topicA"));
         LinkedList<Channel> agreeA = topicA.getOrDefault(new Viewpoint("agree"), new LinkedList<>());
         LinkedList<Channel> disagreeA = topicA.getOrDefault(new Viewpoint("disagree"), new LinkedList<>());
 
-        HashMap<Viewpoint, LinkedList<Channel>> topicB = InMemoryChannelRetriever.topics.get(new Topic("topicB"));
+        HashMap<Viewpoint, LinkedList<Channel>> topicB = inMemoryChannelRetriever.topics.get(new Topic("topicB"));
         LinkedList<Channel> agreeB = topicB.getOrDefault(new Viewpoint("agree"), new LinkedList<>());
         LinkedList<Channel> disagreeB = topicB.getOrDefault(new Viewpoint("disagree"), new LinkedList<>());
 
@@ -77,5 +81,10 @@ public class InMemoryChannelRetrieverThreadSafetyTest {
             topicsAndViewpoints.add(agreeListB);
             topicsAndViewpoints.add(disagreeListB);
         }
+    }
+
+    private InMemoryChannelRetriever getChannelRetriever() {
+        Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topicViewpointChannelStore = new HashMap<>();
+        return new InMemoryChannelRetriever(topicViewpointChannelStore);
     }
 }

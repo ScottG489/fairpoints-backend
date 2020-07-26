@@ -17,6 +17,12 @@ import javax.ws.rs.core.Response;
 @Path("/chat/channel")
 @Slf4j
 public class ChatResource {
+    private final InMemoryChannelRetriever inMemoryChannelRetriever;
+
+    public ChatResource(InMemoryChannelRetriever inMemoryChannelRetriever) {
+        this.inMemoryChannelRetriever = inMemoryChannelRetriever;
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResponse(
@@ -25,7 +31,7 @@ public class ChatResource {
         Topic topic = new Topic(topicId);
         Viewpoint viewpoint = new Viewpoint(viewpointStance);
 
-        Channel channel = InMemoryChannelRetriever.getChannel(topic, viewpoint);
+        Channel channel = inMemoryChannelRetriever.getChannel(topic, viewpoint);
 
         return Response.ok(channel).build();
     }

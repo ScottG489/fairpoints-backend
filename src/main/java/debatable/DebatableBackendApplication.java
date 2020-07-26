@@ -1,5 +1,9 @@
 package debatable;
 
+import debatable.core.Channel;
+import debatable.core.InMemoryChannelRetriever;
+import debatable.core.Topic;
+import debatable.core.Viewpoint;
 import debatable.health.VersionCheck;
 import debatable.resources.ChatResource;
 import debatable.resources.TokenResource;
@@ -9,6 +13,10 @@ import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class DebatableBackendApplication extends Application<DebatableBackendConfiguration> {
     public static void main(String[] args) throws Exception {
@@ -38,8 +46,13 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
                 configuration.getTwilioApiKey(),
                 configuration.getTwilioApiSecret(),
                 configuration.getTwilioChatServiceSid()));
-        environment.jersey().register(new ChatResource());
+        environment.jersey().register(new ChatResource(getChannelRetriever()));
 
         environment.healthChecks().register("version", new VersionCheck());
+    }
+
+    private InMemoryChannelRetriever getChannelRetriever() {
+        Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topicViewpointChannelStore = new HashMap<>();
+        return new InMemoryChannelRetriever(topicViewpointChannelStore);
     }
 }

@@ -7,9 +7,13 @@ import java.util.Random;
 
 // TODO: Make use of getOrDefault to make code cleaner?
 public class InMemoryChannelRetriever {
-    public static final Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topics = new HashMap<>();
+    public final Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topics;
 
-    public synchronized static Channel getChannel(Topic topic, Viewpoint viewpoint) {
+    public InMemoryChannelRetriever(Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topics) {
+        this.topics = topics;
+    }
+
+    public synchronized Channel getChannel(Topic topic, Viewpoint viewpoint) {
         Channel channel;
         if (topics.containsKey(topic)) {
             HashMap<Viewpoint, LinkedList<Channel>> viewpointChannelsHashMap = topics.get(topic);
