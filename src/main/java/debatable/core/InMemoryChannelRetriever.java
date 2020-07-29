@@ -7,46 +7,47 @@ import java.util.Random;
 
 // TODO: Make use of getOrDefault to make code cleaner?
 public class InMemoryChannelRetriever {
-    public final Map<Topic, Map<Viewpoint, LinkedList<Channel>>> topics;
+    public final Map<String, Map<String, LinkedList<String>>> topics;
 
-    public InMemoryChannelRetriever(Map<Topic, Map<Viewpoint, LinkedList<Channel>>> topics) {
+    public InMemoryChannelRetriever(Map<String, Map<String, LinkedList<String>>> topics) {
         this.topics = topics;
     }
 
     public synchronized Channel getChannel(Topic topic, Viewpoint viewpoint) {
-        Channel channel;
-        if (topics.containsKey(topic)) {
-            Map<Viewpoint, LinkedList<Channel>> viewpointChannelsMap = topics.get(topic);
+        String channelId;
+        if (topics.containsKey(topic.getId())) {
+            Map<String, LinkedList<String>> viewpointChannelsMap = topics.get(topic.getId());
             Viewpoint opposingViewpoint = getOpposingViewpoint(viewpoint);
-            if (viewpointChannelsMap.containsKey(opposingViewpoint)) {
-                LinkedList<Channel> opposingViewpointChannels = viewpointChannelsMap.get(opposingViewpoint);
+            if (viewpointChannelsMap.containsKey(opposingViewpoint.getStance())) {
+                LinkedList<String> opposingViewpointChannels =
+                        viewpointChannelsMap.get(opposingViewpoint.getStance());
                 if (opposingViewpointChannels.isEmpty()) {
-                    channel = generateRandomChannel();
-                    if (viewpointChannelsMap.containsKey(viewpoint)) {
-                        LinkedList<Channel> currentViewpointChannels = viewpointChannelsMap.get(viewpoint);
-                        currentViewpointChannels.add(channel);
+                    channelId = generateRandomChannelId();
+                    if (viewpointChannelsMap.containsKey(viewpoint.getStance())) {
+                        LinkedList<String> currentViewpointChannels = viewpointChannelsMap.get(viewpoint.getStance());
+                        currentViewpointChannels.add(channelId);
                     } else {
-                        LinkedList<Channel> channels = new LinkedList<>();
-                        channels.add(channel);
-                        viewpointChannelsMap.put(viewpoint, channels);
+                        LinkedList<String> channels = new LinkedList<>();
+                        channels.add(channelId);
+                        viewpointChannelsMap.put(viewpoint.getStance(), channels);
                     }
                 } else {
-                    channel = opposingViewpointChannels.remove();
+                    channelId = opposingViewpointChannels.remove();
                 }
             } else {
-                channel = generateRandomChannel();
-                viewpointChannelsMap.get(viewpoint).add(channel);
+                channelId = generateRandomChannelId();
+                viewpointChannelsMap.get(viewpoint.getStance()).add(channelId);
             }
         } else {
-            Map<Viewpoint, LinkedList<Channel>> viewpointChannelMap = new HashMap<>();
-            channel = generateRandomChannel();
-            LinkedList<Channel> channels = new LinkedList<>();
-            channels.add(channel);
-            viewpointChannelMap.put(viewpoint, channels);
-            topics.put(topic, viewpointChannelMap);
+            Map<String, LinkedList<String>> viewpointChannelMap = new HashMap<>();
+            channelId = generateRandomChannelId();
+            LinkedList<String> channels = new LinkedList<>();
+            channels.add(channelId);
+            viewpointChannelMap.put(viewpoint.getStance(), channels);
+            topics.put(topic.getId(), viewpointChannelMap);
         }
 
-        return channel;
+        return new Channel(channelId);
     }
 
     private static Viewpoint getOpposingViewpoint(Viewpoint viewpoint) {
@@ -55,7 +56,7 @@ public class InMemoryChannelRetriever {
                 : new Viewpoint("agree");
     }
 
-    private static Channel generateRandomChannel() {
+    private static String generateRandomChannelId() {
         int leftLimit = 97; // letter 'a'
         int rightLimit = 122; // letter 'z'
         int targetStringLength = 10;
@@ -66,6 +67,6 @@ public class InMemoryChannelRetriever {
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
 
-        return new Channel(randomAlpha);
+        return randomAlpha;
     }
 }

@@ -48,13 +48,13 @@ public class InMemoryChannelRetrieverThreadSafetyTest {
         service.shutdown();
         service.awaitTermination(10000, TimeUnit.SECONDS);
 
-        Map<Viewpoint, LinkedList<Channel>> topicA = inMemoryChannelRetriever.topics.get(new Topic("topicA"));
-        LinkedList<Channel> agreeA = topicA.getOrDefault(new Viewpoint("agree"), new LinkedList<>());
-        LinkedList<Channel> disagreeA = topicA.getOrDefault(new Viewpoint("disagree"), new LinkedList<>());
+        Map<String, LinkedList<String>> topicA = inMemoryChannelRetriever.topics.get("topicA");
+        LinkedList<String> agreeA = topicA.getOrDefault("agree", new LinkedList<>());
+        LinkedList<String> disagreeA = topicA.getOrDefault("disagree", new LinkedList<>());
 
-        Map<Viewpoint, LinkedList<Channel>> topicB = inMemoryChannelRetriever.topics.get(new Topic("topicB"));
-        LinkedList<Channel> agreeB = topicB.getOrDefault(new Viewpoint("agree"), new LinkedList<>());
-        LinkedList<Channel> disagreeB = topicB.getOrDefault(new Viewpoint("disagree"), new LinkedList<>());
+        Map<String, LinkedList<String>> topicB = inMemoryChannelRetriever.topics.get("topicB");
+        LinkedList<String> agreeB = topicB.getOrDefault("agree", new LinkedList<>());
+        LinkedList<String> disagreeB = topicB.getOrDefault("disagree", new LinkedList<>());
 
         assertThat(agreeA.size(), is(0));
         assertThat(disagreeA.size(), is(0));
@@ -86,7 +86,7 @@ public class InMemoryChannelRetrieverThreadSafetyTest {
     }
 
     private InMemoryChannelRetriever getChannelRetriever() {
-        Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topicViewpointChannelStore = new HashMap<>();
+        Map<String, Map<String, LinkedList<String>>> topicViewpointChannelStore = new HashMap<>();
         return new InMemoryChannelRetriever(topicViewpointChannelStore);
     }
 }

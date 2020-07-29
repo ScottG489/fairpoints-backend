@@ -82,7 +82,7 @@ public class ChatResourceTest {
     }
 
     private InMemoryChannelRetriever getChannelRetriever() {
-        Map<Topic, Map<Viewpoint, LinkedList<Channel>>> topicViewpointChannelStore = new HashMap<>();
+        Map<String, Map<String, LinkedList<String>>> topicViewpointChannelStore = new HashMap<>();
         return new InMemoryChannelRetriever(topicViewpointChannelStore);
     }
 }
