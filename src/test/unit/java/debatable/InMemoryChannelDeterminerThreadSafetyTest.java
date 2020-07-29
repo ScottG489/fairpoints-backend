@@ -1,7 +1,6 @@
 package debatable;
 
-import debatable.core.Channel;
-import debatable.core.InMemoryChannelRetriever;
+import debatable.core.InMemoryChannelDeterminer;
 import debatable.core.Topic;
 import debatable.core.Viewpoint;
 import org.junit.Before;
@@ -20,9 +19,10 @@ import static org.junit.Assert.assertThat;
 // NOTE: Since the in memory implementation is deprecated this is mostly for demonstrative purposes.
 // NOTE:   However, this may be useful in the future for actual implementations. Keep.
 @RunWith(Parameterized.class)
-public class InMemoryChannelRetrieverThreadSafetyTest {
+public class InMemoryChannelDeterminerThreadSafetyTest {
+    private InMemoryChannelDeterminer inMemoryChannelDeterminer;
+    private Map<String, Map<String, LinkedList<String>>> channelsStore = new HashMap<>();
     private static final List<List<Object>> topicsAndViewpoints = new ArrayList<>();
-    private InMemoryChannelRetriever inMemoryChannelRetriever;
 
     @Parameterized.Parameters
     public static Object[][] data() {
@@ -32,7 +32,8 @@ public class InMemoryChannelRetrieverThreadSafetyTest {
 
     @Before
     public void before() {
-        inMemoryChannelRetriever = getChannelRetriever();
+        channelsStore = new HashMap<>();
+        inMemoryChannelDeterminer = new InMemoryChannelDeterminer();
     }
 
     @Test
@@ -42,17 +43,17 @@ public class InMemoryChannelRetrieverThreadSafetyTest {
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
         for (List<Object> l : topicsAndViewpoints) {
             service.execute(() -> {
-                inMemoryChannelRetriever.getChannel((Topic) l.get(0), (Viewpoint) l.get(1));
+                inMemoryChannelDeterminer.determineChannel((Topic) l.get(0), (Viewpoint) l.get(1), channelsStore);
             });
         }
         service.shutdown();
         service.awaitTermination(10000, TimeUnit.SECONDS);
 
-        Map<String, LinkedList<String>> topicA = inMemoryChannelRetriever.topics.get("topicA");
+        Map<String, LinkedList<String>> topicA = channelsStore.get("topicA");
         LinkedList<String> agreeA = topicA.getOrDefault("agree", new LinkedList<>());
         LinkedList<String> disagreeA = topicA.getOrDefault("disagree", new LinkedList<>());
 
-        Map<String, LinkedList<String>> topicB = inMemoryChannelRetriever.topics.get("topicB");
+        Map<String, LinkedList<String>> topicB = channelsStore.get("topicB");
         LinkedList<String> agreeB = topicB.getOrDefault("agree", new LinkedList<>());
         LinkedList<String> disagreeB = topicB.getOrDefault("disagree", new LinkedList<>());
 
@@ -83,10 +84,5 @@ public class InMemoryChannelRetrieverThreadSafetyTest {
             topicsAndViewpoints.add(agreeListB);
             topicsAndViewpoints.add(disagreeListB);
         }
-    }
-
-    private InMemoryChannelRetriever getChannelRetriever() {
-        Map<String, Map<String, LinkedList<String>>> topicViewpointChannelStore = new HashMap<>();
-        return new InMemoryChannelRetriever(topicViewpointChannelStore);
     }
 }

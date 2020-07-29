@@ -5,14 +5,14 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
-public class InMemoryChannelRetriever {
-    public final Map<String, Map<String, LinkedList<String>>> topics;
+public class RedisChannelRetriever {
+    public Map<String, Map<String, LinkedList<String>>> topics;
 
-    public InMemoryChannelRetriever(Map<String, Map<String, LinkedList<String>>> topics) {
+    public RedisChannelRetriever(Map<String, Map<String, LinkedList<String>>> topics) {
         this.topics = topics;
     }
 
-    public synchronized Channel getChannel(Topic topic, Viewpoint viewpoint) {
+    public Channel getChannel(Topic topic, Viewpoint viewpoint) {
         String channelId;
         Map<String, LinkedList<String>> viewpointChannelsMap =
                 topics.getOrDefault(topic.getId(), new HashMap<>());
@@ -28,6 +28,8 @@ public class InMemoryChannelRetriever {
         } else {
             channelId = createTopicEntry(topic, viewpoint, viewpointChannelsMap);
         }
+
+        topics.put(topic.getId(), viewpointChannelsMap);
 
         return new Channel(channelId);
     }

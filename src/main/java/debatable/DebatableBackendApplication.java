@@ -46,22 +46,28 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
                 configuration.getTwilioApiKey(),
                 configuration.getTwilioApiSecret(),
                 configuration.getTwilioChatServiceSid()));
-        environment.jersey().register(new ChatResource(getChannelRetriever()));
+        environment.jersey().register(new ChatResource(new InMemoryChannelDeterminer(), getInMemoryTopics()));
 
         environment.healthChecks().register("version", new VersionCheck());
     }
 
-    private RedisChannelRetriever getRedisChannelRetriever() {
+    private InMemoryChannelDeterminer getInMemoryChannelRetriever() {
+        return new InMemoryChannelDeterminer();
+    }
+
+    private Map<String, Map<String, LinkedList<String>>> getInMemoryTopics() {
+        return new HashMap<>();
+    }
+
+//    private RedisChannelRetriever getRedisChannelRetriever() {
+//        Map<String, Map<String, LinkedList<String>>> topics = getRedisTopics();
+//        return new RedisChannelRetriever();
+//    }
+
+    private Map<String, Map<String, LinkedList<String>>> getRedisTopics() {
         Config config = new Config();
         config.useSingleServer().setAddress("redis://localhost:6379");
         RedissonClient redisson = Redisson.create(config);
-        Map<Topic, Map<Viewpoint, LinkedList<Channel>>> topics =
-                redisson.getMap("topics");
-        return new RedisChannelRetriever(topics);
-    }
-
-    private InMemoryChannelRetriever getChannelRetriever() {
-        Map<String, Map<String, LinkedList<String>>> topicViewpointChannelStore = new HashMap<>();
-        return new InMemoryChannelRetriever(topicViewpointChannelStore);
+        return redisson.getMap("topics");
     }
 }
