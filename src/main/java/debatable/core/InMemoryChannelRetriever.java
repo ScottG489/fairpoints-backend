@@ -72,11 +72,9 @@ public class InMemoryChannelRetriever {
         int targetStringLength = 10;
         Random random = new Random();
 
-        String randomAlpha = random.ints(leftLimit, rightLimit + 1)
+        return random.ints(leftLimit, rightLimit + 1)
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
-
-        return randomAlpha;
     }
 }
