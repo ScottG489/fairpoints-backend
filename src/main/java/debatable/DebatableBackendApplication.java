@@ -1,6 +1,6 @@
 package debatable;
 
-import debatable.core.*;
+import debatable.core.ChannelDeterminer;
 import debatable.health.VersionCheck;
 import debatable.resources.ChatResource;
 import debatable.resources.TokenResource;
@@ -46,16 +46,12 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
                 configuration.getTwilioApiKey(),
                 configuration.getTwilioApiSecret(),
                 configuration.getTwilioChatServiceSid()));
-        environment.jersey().register(new ChatResource(new InMemoryChannelDeterminer(), getInMemoryTopics()));
+        environment.jersey().register(new ChatResource(new ChannelDeterminer(), getInMemoryChannelsStore()));
 
         environment.healthChecks().register("version", new VersionCheck());
     }
 
-    private InMemoryChannelDeterminer getInMemoryChannelRetriever() {
-        return new InMemoryChannelDeterminer();
-    }
-
-    private Map<String, Map<String, LinkedList<String>>> getInMemoryTopics() {
+    private Map<String, Map<String, LinkedList<String>>> getInMemoryChannelsStore() {
         return new HashMap<>();
     }
 
@@ -64,7 +60,7 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
 //        return new RedisChannelRetriever();
 //    }
 
-    private Map<String, Map<String, LinkedList<String>>> getRedisTopics() {
+    private Map<String, Map<String, LinkedList<String>>> getRedisChannelsStore() {
         Config config = new Config();
         config.useSingleServer().setAddress("redis://localhost:6379");
         RedissonClient redisson = Redisson.create(config);

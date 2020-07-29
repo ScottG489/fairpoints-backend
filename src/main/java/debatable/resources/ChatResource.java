@@ -1,7 +1,7 @@
 package debatable.resources;
 
 import debatable.core.Channel;
-import debatable.core.InMemoryChannelDeterminer;
+import debatable.core.ChannelDeterminer;
 import debatable.core.Topic;
 import debatable.core.Viewpoint;
 import lombok.extern.slf4j.Slf4j;
@@ -13,19 +13,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 @Path("/chat/channel")
 @Slf4j
 public class ChatResource {
-    private final InMemoryChannelDeterminer inMemoryChannelDeterminer;
+    private final ChannelDeterminer channelDeterminer;
     Map<String, Map<String, LinkedList<String>>> channelsStore;
 
     public ChatResource(
-            InMemoryChannelDeterminer inMemoryChannelDeterminer,
+            ChannelDeterminer channelDeterminer,
             Map<String, Map<String, LinkedList<String>>> channelsStore) {
-        this.inMemoryChannelDeterminer = inMemoryChannelDeterminer;
+        this.channelDeterminer = channelDeterminer;
         this.channelsStore = channelsStore;
     }
 
@@ -37,8 +38,18 @@ public class ChatResource {
         Topic topic = new Topic(topicId);
         Viewpoint viewpoint = new Viewpoint(viewpointStance);
 
-        Channel channel = inMemoryChannelDeterminer.determineChannel(topic, viewpoint, channelsStore);
+        Channel channel = channelDeterminer.determineChannel(topic, viewpoint, channelsStore);
+//        redisHack(topicId, topic);
 
         return Response.ok(channel).build();
+    }
+
+    // TODO: Because there is no memory reference back to the original topic we need to manually put
+    // TODO:   the entry back into redis. This hack may go away if we start using native redisson types
+    // TODO:   (e.g. RMap and RList instead of HashMap and LinkedList)
+    private void redisHack(@QueryParam("topicId") @NotEmpty String topicId, Topic topic) {
+        Map<String, LinkedList<String>> viewpointChannelsMap =
+                channelsStore.getOrDefault(topic.getId(), new HashMap<>());
+        channelsStore.put(topicId, viewpointChannelsMap);
     }
 }

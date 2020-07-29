@@ -1,6 +1,6 @@
 package debatable;
 
-import debatable.core.InMemoryChannelDeterminer;
+import debatable.core.ChannelDeterminer;
 import debatable.core.Topic;
 import debatable.core.Viewpoint;
 import org.junit.Before;
@@ -19,8 +19,8 @@ import static org.junit.Assert.assertThat;
 // NOTE: Since the in memory implementation is deprecated this is mostly for demonstrative purposes.
 // NOTE:   However, this may be useful in the future for actual implementations. Keep.
 @RunWith(Parameterized.class)
-public class InMemoryChannelDeterminerThreadSafetyTest {
-    private InMemoryChannelDeterminer inMemoryChannelDeterminer;
+public class ChannelDeterminerThreadSafetyTest {
+    private ChannelDeterminer channelDeterminer;
     private Map<String, Map<String, LinkedList<String>>> channelsStore = new HashMap<>();
     private static final List<List<Object>> topicsAndViewpoints = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class InMemoryChannelDeterminerThreadSafetyTest {
     @Before
     public void before() {
         channelsStore = new HashMap<>();
-        inMemoryChannelDeterminer = new InMemoryChannelDeterminer();
+        channelDeterminer = new ChannelDeterminer();
     }
 
     @Test
@@ -43,7 +43,7 @@ public class InMemoryChannelDeterminerThreadSafetyTest {
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
         for (List<Object> l : topicsAndViewpoints) {
             service.execute(() -> {
-                inMemoryChannelDeterminer.determineChannel((Topic) l.get(0), (Viewpoint) l.get(1), channelsStore);
+                channelDeterminer.determineChannel((Topic) l.get(0), (Viewpoint) l.get(1), channelsStore);
             });
         }
         service.shutdown();
