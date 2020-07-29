@@ -7,43 +7,43 @@ import java.util.Random;
 
 // TODO: Make use of getOrDefault to make code cleaner?
 public class InMemoryChannelRetriever {
-    public final Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topics;
+    public final Map<Topic, Map<Viewpoint, LinkedList<Channel>>> topics;
 
-    public InMemoryChannelRetriever(Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topics) {
+    public InMemoryChannelRetriever(Map<Topic, Map<Viewpoint, LinkedList<Channel>>> topics) {
         this.topics = topics;
     }
 
     public synchronized Channel getChannel(Topic topic, Viewpoint viewpoint) {
         Channel channel;
         if (topics.containsKey(topic)) {
-            Map<Viewpoint, LinkedList<Channel>> viewpointChannelsHashMap = topics.get(topic);
+            Map<Viewpoint, LinkedList<Channel>> viewpointChannelsMap = topics.get(topic);
             Viewpoint opposingViewpoint = getOpposingViewpoint(viewpoint);
-            if (viewpointChannelsHashMap.containsKey(opposingViewpoint)) {
-                LinkedList<Channel> opposingViewpointChannels = viewpointChannelsHashMap.get(opposingViewpoint);
+            if (viewpointChannelsMap.containsKey(opposingViewpoint)) {
+                LinkedList<Channel> opposingViewpointChannels = viewpointChannelsMap.get(opposingViewpoint);
                 if (opposingViewpointChannels.isEmpty()) {
                     channel = generateRandomChannel();
-                    if (viewpointChannelsHashMap.containsKey(viewpoint)) {
-                        LinkedList<Channel> currentViewpointChannels = viewpointChannelsHashMap.get(viewpoint);
+                    if (viewpointChannelsMap.containsKey(viewpoint)) {
+                        LinkedList<Channel> currentViewpointChannels = viewpointChannelsMap.get(viewpoint);
                         currentViewpointChannels.add(channel);
                     } else {
                         LinkedList<Channel> channels = new LinkedList<>();
                         channels.add(channel);
-                        viewpointChannelsHashMap.put(viewpoint, channels);
+                        viewpointChannelsMap.put(viewpoint, channels);
                     }
                 } else {
                     channel = opposingViewpointChannels.remove();
                 }
             } else {
                 channel = generateRandomChannel();
-                viewpointChannelsHashMap.get(viewpoint).add(channel);
+                viewpointChannelsMap.get(viewpoint).add(channel);
             }
         } else {
-            HashMap<Viewpoint, LinkedList<Channel>> viewpointChannelHashMap = new HashMap<>();
+            Map<Viewpoint, LinkedList<Channel>> viewpointChannelMap = new HashMap<>();
             channel = generateRandomChannel();
             LinkedList<Channel> channels = new LinkedList<>();
             channels.add(channel);
-            viewpointChannelHashMap.put(viewpoint, channels);
-            topics.put(topic, viewpointChannelHashMap);
+            viewpointChannelMap.put(viewpoint, channels);
+            topics.put(topic, viewpointChannelMap);
         }
 
         return channel;

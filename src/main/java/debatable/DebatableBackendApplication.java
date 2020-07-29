@@ -61,7 +61,7 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
     }
 
     private InMemoryChannelRetriever getChannelRetriever() {
-        Map<Topic, HashMap<Viewpoint, LinkedList<Channel>>> topicViewpointChannelStore = new HashMap<>();
+        Map<Topic, Map<Viewpoint, LinkedList<Channel>>> topicViewpointChannelStore = new HashMap<>();
         return new InMemoryChannelRetriever(topicViewpointChannelStore);
     }
 }
