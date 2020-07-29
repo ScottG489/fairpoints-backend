@@ -16,7 +16,7 @@ public class InMemoryChannelRetriever {
     public synchronized Channel getChannel(Topic topic, Viewpoint viewpoint) {
         Channel channel;
         if (topics.containsKey(topic)) {
-            HashMap<Viewpoint, LinkedList<Channel>> viewpointChannelsHashMap = topics.get(topic);
+            Map<Viewpoint, LinkedList<Channel>> viewpointChannelsHashMap = topics.get(topic);
             Viewpoint opposingViewpoint = getOpposingViewpoint(viewpoint);
             if (viewpointChannelsHashMap.containsKey(opposingViewpoint)) {
                 LinkedList<Channel> opposingViewpointChannels = viewpointChannelsHashMap.get(opposingViewpoint);
