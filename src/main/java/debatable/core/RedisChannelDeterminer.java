@@ -5,19 +5,16 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
-public class RedisChannelRetriever {
-    public Map<String, Map<String, LinkedList<String>>> topics;
-
-    public RedisChannelRetriever(Map<String, Map<String, LinkedList<String>>> topics) {
-        this.topics = topics;
-    }
-
-    public Channel getChannel(Topic topic, Viewpoint viewpoint) {
+public class RedisChannelDeterminer {
+    public Channel getChannel(
+            Topic topic,
+            Viewpoint viewpoint,
+            Map<String, Map<String, LinkedList<String>>> channelsStore) {
         String channelId;
         Map<String, LinkedList<String>> viewpointChannelsMap =
-                topics.getOrDefault(topic.getId(), new HashMap<>());
+                channelsStore.getOrDefault(topic.getId(), new HashMap<>());
 
-        if (topics.containsKey(topic.getId())) {
+        if (channelsStore.containsKey(topic.getId())) {
             LinkedList<String> opposingViewpointChannels =
                     getOpposingViewpointChannels(viewpoint, viewpointChannelsMap);
             if (opposingViewpointChannels.isEmpty()) {
@@ -26,10 +23,11 @@ public class RedisChannelRetriever {
                 channelId = opposingViewpointChannels.remove();
             }
         } else {
-            channelId = createTopicEntry(topic, viewpoint, viewpointChannelsMap);
+            channelId = createChannelEntry(viewpoint, viewpointChannelsMap);
+            channelsStore.put(topic.getId(), viewpointChannelsMap);
         }
 
-        topics.put(topic.getId(), viewpointChannelsMap);
+        channelsStore.put(topic.getId(), viewpointChannelsMap);
 
         return new Channel(channelId);
     }
@@ -44,21 +42,13 @@ public class RedisChannelRetriever {
 
     private String createChannelEntry(Viewpoint viewpoint, Map<String, LinkedList<String>> viewpointChannelsMap) {
         String channelId;
+
         channelId = generateRandomChannelId();
         LinkedList<String> currentViewpointChannels =
                 viewpointChannelsMap.getOrDefault(viewpoint.getStance(), new LinkedList<>());
         currentViewpointChannels.add(channelId);
         viewpointChannelsMap.put(viewpoint.getStance(), currentViewpointChannels);
-        return channelId;
-    }
 
-    private String createTopicEntry(Topic topic, Viewpoint viewpoint, Map<String, LinkedList<String>> viewpointChannelsMap) {
-        String channelId;
-        channelId = generateRandomChannelId();
-        LinkedList<String> channels = new LinkedList<>();
-        channels.add(channelId);
-        viewpointChannelsMap.put(viewpoint.getStance(), channels);
-        topics.put(topic.getId(), viewpointChannelsMap);
         return channelId;
     }
 
