@@ -17,7 +17,8 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-// NOTE: Since the in memory implementation is deprecated this is mostly for demonstrative
+// NOTE: Since the in memory implementation is deprecated this is mostly for demonstrative purposes.
+// NOTE:   However, this may be useful in the future for actual implementations. Keep.
 @RunWith(Parameterized.class)
 public class InMemoryChannelRetrieverThreadSafetyTest {
     private static final List<List<Object>> topicsAndViewpoints = new ArrayList<>();
@@ -25,6 +26,7 @@ public class InMemoryChannelRetrieverThreadSafetyTest {
 
     @Parameterized.Parameters
     public static Object[][] data() {
+        // Run this test suite 10 times
         return new Object[10][0];
     }
 
@@ -46,11 +48,11 @@ public class InMemoryChannelRetrieverThreadSafetyTest {
         service.shutdown();
         service.awaitTermination(10000, TimeUnit.SECONDS);
 
-        HashMap<Viewpoint, LinkedList<Channel>> topicA = inMemoryChannelRetriever.topics.get(new Topic("topicA"));
+        Map<Viewpoint, LinkedList<Channel>> topicA = inMemoryChannelRetriever.topics.get(new Topic("topicA"));
         LinkedList<Channel> agreeA = topicA.getOrDefault(new Viewpoint("agree"), new LinkedList<>());
         LinkedList<Channel> disagreeA = topicA.getOrDefault(new Viewpoint("disagree"), new LinkedList<>());
 
-        HashMap<Viewpoint, LinkedList<Channel>> topicB = inMemoryChannelRetriever.topics.get(new Topic("topicB"));
+        Map<Viewpoint, LinkedList<Channel>> topicB = inMemoryChannelRetriever.topics.get(new Topic("topicB"));
         LinkedList<Channel> agreeB = topicB.getOrDefault(new Viewpoint("agree"), new LinkedList<>());
         LinkedList<Channel> disagreeB = topicB.getOrDefault(new Viewpoint("disagree"), new LinkedList<>());
 
