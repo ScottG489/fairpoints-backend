@@ -14,30 +14,50 @@ public class InMemoryChannelRetriever {
 
     public synchronized Channel getChannel(Topic topic, Viewpoint viewpoint) {
         String channelId;
-        Map<String, LinkedList<String>> viewpointChannelsMap = topics.getOrDefault(topic.getId(), new HashMap<>());
+        Map<String, LinkedList<String>> viewpointChannelsMap =
+                topics.getOrDefault(topic.getId(), new HashMap<>());
 
         if (topics.containsKey(topic.getId())) {
-            Viewpoint opposingViewpoint = getOpposingViewpoint(viewpoint);
             LinkedList<String> opposingViewpointChannels =
-                    viewpointChannelsMap.getOrDefault(opposingViewpoint.getStance(), new LinkedList<>());
+                    getOpposingViewpointChannels(viewpoint, viewpointChannelsMap);
             if (opposingViewpointChannels.isEmpty()) {
-                channelId = generateRandomChannelId();
-                LinkedList<String> currentViewpointChannels =
-                        viewpointChannelsMap.getOrDefault(viewpoint.getStance(), new LinkedList<>());
-                currentViewpointChannels.add(channelId);
-                viewpointChannelsMap.put(viewpoint.getStance(), currentViewpointChannels);
+                channelId = createChannelEntry(viewpoint, viewpointChannelsMap);
             } else {
                 channelId = opposingViewpointChannels.remove();
             }
         } else {
-            channelId = generateRandomChannelId();
-            LinkedList<String> channels = new LinkedList<>();
-            channels.add(channelId);
-            viewpointChannelsMap.put(viewpoint.getStance(), channels);
-            topics.put(topic.getId(), viewpointChannelsMap);
+            channelId = createTopicEntry(topic, viewpoint, viewpointChannelsMap);
         }
 
         return new Channel(channelId);
+    }
+
+    private LinkedList<String> getOpposingViewpointChannels(
+            Viewpoint viewpoint,
+            Map<String, LinkedList<String>> viewpointChannelsMap) {
+        return viewpointChannelsMap.getOrDefault(
+                getOpposingViewpoint(viewpoint).getStance(),
+                new LinkedList<>());
+    }
+
+    private String createChannelEntry(Viewpoint viewpoint, Map<String, LinkedList<String>> viewpointChannelsMap) {
+        String channelId;
+        channelId = generateRandomChannelId();
+        LinkedList<String> currentViewpointChannels =
+                viewpointChannelsMap.getOrDefault(viewpoint.getStance(), new LinkedList<>());
+        currentViewpointChannels.add(channelId);
+        viewpointChannelsMap.put(viewpoint.getStance(), currentViewpointChannels);
+        return channelId;
+    }
+
+    private String createTopicEntry(Topic topic, Viewpoint viewpoint, Map<String, LinkedList<String>> viewpointChannelsMap) {
+        String channelId;
+        channelId = generateRandomChannelId();
+        LinkedList<String> channels = new LinkedList<>();
+        channels.add(channelId);
+        viewpointChannelsMap.put(viewpoint.getStance(), channels);
+        topics.put(topic.getId(), viewpointChannelsMap);
+        return channelId;
     }
 
     private static Viewpoint getOpposingViewpoint(Viewpoint viewpoint) {
