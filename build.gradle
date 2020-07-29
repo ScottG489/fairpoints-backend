@@ -13,6 +13,7 @@ dependencies {
 
     compile group: 'io.dropwizard', name: 'dropwizard-core', version: '2.0.10'
     compile 'com.twilio.sdk:twilio:7.54.0'
+    compile 'org.redisson:redisson:3.13.2'
 }
 
 apply from: 'gradle/install.gradle'

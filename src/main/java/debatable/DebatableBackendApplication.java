@@ -1,9 +1,6 @@
 package debatable;
 
-import debatable.core.Channel;
-import debatable.core.InMemoryChannelRetriever;
-import debatable.core.Topic;
-import debatable.core.Viewpoint;
+import debatable.core.*;
 import debatable.health.VersionCheck;
 import debatable.resources.ChatResource;
 import debatable.resources.TokenResource;
@@ -13,6 +10,9 @@ import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -49,6 +49,15 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
         environment.jersey().register(new ChatResource(getChannelRetriever()));
 
         environment.healthChecks().register("version", new VersionCheck());
+    }
+
+    private RedisChannelRetriever getRedisChannelRetriever() {
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://localhost:6379");
+        RedissonClient redisson = Redisson.create(config);
+        Map<Topic, Map<Viewpoint, LinkedList<Channel>>> topics =
+                redisson.getMap("topics");
+        return new RedisChannelRetriever(topics);
     }
 
     private InMemoryChannelRetriever getChannelRetriever() {
