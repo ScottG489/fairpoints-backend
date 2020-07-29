@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
-// TODO: Make use of getOrDefault to make code cleaner?
 public class InMemoryChannelRetriever {
     public final Map<String, Map<String, LinkedList<String>>> topics;
 
@@ -15,36 +14,27 @@ public class InMemoryChannelRetriever {
 
     public synchronized Channel getChannel(Topic topic, Viewpoint viewpoint) {
         String channelId;
+        Map<String, LinkedList<String>> viewpointChannelsMap = topics.getOrDefault(topic.getId(), new HashMap<>());
+
         if (topics.containsKey(topic.getId())) {
-            Map<String, LinkedList<String>> viewpointChannelsMap = topics.get(topic.getId());
             Viewpoint opposingViewpoint = getOpposingViewpoint(viewpoint);
-            if (viewpointChannelsMap.containsKey(opposingViewpoint.getStance())) {
-                LinkedList<String> opposingViewpointChannels =
-                        viewpointChannelsMap.get(opposingViewpoint.getStance());
-                if (opposingViewpointChannels.isEmpty()) {
-                    channelId = generateRandomChannelId();
-                    if (viewpointChannelsMap.containsKey(viewpoint.getStance())) {
-                        LinkedList<String> currentViewpointChannels = viewpointChannelsMap.get(viewpoint.getStance());
-                        currentViewpointChannels.add(channelId);
-                    } else {
-                        LinkedList<String> channels = new LinkedList<>();
-                        channels.add(channelId);
-                        viewpointChannelsMap.put(viewpoint.getStance(), channels);
-                    }
-                } else {
-                    channelId = opposingViewpointChannels.remove();
-                }
-            } else {
+            LinkedList<String> opposingViewpointChannels =
+                    viewpointChannelsMap.getOrDefault(opposingViewpoint.getStance(), new LinkedList<>());
+            if (opposingViewpointChannels.isEmpty()) {
                 channelId = generateRandomChannelId();
-                viewpointChannelsMap.get(viewpoint.getStance()).add(channelId);
+                LinkedList<String> currentViewpointChannels =
+                        viewpointChannelsMap.getOrDefault(viewpoint.getStance(), new LinkedList<>());
+                currentViewpointChannels.add(channelId);
+                viewpointChannelsMap.put(viewpoint.getStance(), currentViewpointChannels);
+            } else {
+                channelId = opposingViewpointChannels.remove();
             }
         } else {
-            Map<String, LinkedList<String>> viewpointChannelMap = new HashMap<>();
             channelId = generateRandomChannelId();
             LinkedList<String> channels = new LinkedList<>();
             channels.add(channelId);
-            viewpointChannelMap.put(viewpoint.getStance(), channels);
-            topics.put(topic.getId(), viewpointChannelMap);
+            viewpointChannelsMap.put(viewpoint.getStance(), channels);
+            topics.put(topic.getId(), viewpointChannelsMap);
         }
 
         return new Channel(channelId);
