@@ -4,7 +4,7 @@ provider "aws" {
 
 module "helpers_spot_instance_ssh" {
   source = "ScottG489/helpers/aws//modules/spot_instance_ssh"
-  version = "0.0.4"
+  version = "0.0.5"
   name = "${random_id.name_prefix.hex}.com"
   instance_type = var.instance_type
   spot_type = var.spot_type
