@@ -2,7 +2,7 @@ package debatable;
 
 import debatable.core.ChannelDeterminer;
 import debatable.health.VersionCheck;
-import debatable.resources.ChatResource;
+import debatable.resources.ChannelResource;
 import debatable.resources.TokenResource;
 import debatable.resources.filter.EveryResponseFilter;
 import io.dropwizard.Application;

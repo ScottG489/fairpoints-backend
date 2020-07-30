@@ -19,11 +19,11 @@ import java.util.Map;
 
 @Path("/chat/channel")
 @Slf4j
-public class ChatResource {
+public class ChannelResource {
     private final ChannelDeterminer channelDeterminer;
     Map<String, Map<String, LinkedList<String>>> channelsStore;
 
-    public ChatResource(
+    public ChannelResource(
             ChannelDeterminer channelDeterminer,
             Map<String, Map<String, LinkedList<String>>> channelsStore) {
         this.channelDeterminer = channelDeterminer;
