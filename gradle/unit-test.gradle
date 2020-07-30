@@ -14,6 +14,10 @@ task unitTest(type: Test) {
     mustRunAfter build
 }
 
+pitest {
+    testSourceSets.set([sourceSets.unitTest])
+}
+
 dependencies {
     testCompile 'junit:junit:4.12'
 }
