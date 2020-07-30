@@ -13,7 +13,7 @@ class TokenSimulation extends Simulation {
     .baseUrl(baseUrl)
   private val request = http("Token request")
     .get("/chat/token")
-  private val scn: ScenarioBuilder = scenario("BasicSimulation")
+  private val scn: ScenarioBuilder = scenario("Token Simulation")
     .exec(request)
 
   setUp(
