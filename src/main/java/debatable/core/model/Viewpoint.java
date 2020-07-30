@@ -1,4 +1,4 @@
-package debatable.core;
+package debatable.core.model;
 
 import lombok.Value;
 

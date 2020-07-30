@@ -1,5 +1,9 @@
 package debatable.core;
 
+import debatable.core.model.Channel;
+import debatable.core.model.Topic;
+import debatable.core.model.Viewpoint;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;

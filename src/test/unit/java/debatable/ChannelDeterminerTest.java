@@ -1,9 +1,9 @@
 package debatable;
 
-import debatable.core.Channel;
+import debatable.core.model.Channel;
 import debatable.core.ChannelDeterminer;
-import debatable.core.Topic;
-import debatable.core.Viewpoint;
+import debatable.core.model.Topic;
+import debatable.core.model.Viewpoint;
 import org.junit.Before;
 import org.junit.Test;
 
