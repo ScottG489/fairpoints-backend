@@ -11,8 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 // TODO: This class feels a bit too high level. I'm not sure if we should be unit testing the chat
@@ -62,5 +61,11 @@ public class ChannelDeterminerTest {
 
         assertThat(channel, is(channel3));
         assertThat(channel2, is(channel4));
+    }
+
+    @Test
+    public void shouldReturnChannelWithSpecifiedPattern() {
+        Channel channel = channelDeterminer.determineChannel(new Topic("topic1"), new Viewpoint("agree"), channelsStore);
+        assertThat(channel.getId(), matchesPattern("^[a-zA-Z0-9]{10}$"));
     }
 }
