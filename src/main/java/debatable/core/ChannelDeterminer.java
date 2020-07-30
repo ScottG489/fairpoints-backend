@@ -28,8 +28,13 @@ public class ChannelDeterminer {
             }
         } else {
             channelId = createChannelEntry(viewpoint, viewpointChannelsMap);
-            channelsStore.put(topic.getId(), viewpointChannelsMap);
         }
+        // TODO: This is a slight hack needed for redis. Although it is necessary when creating a new
+        // TODO:    topic, it isn't when the topic exists.
+        // TODO: Because there is no memory reference back to the original topic we need to manually put
+        // TODO:   the entry back into redis. This hack may go away if we start using native redisson types
+        // TODO:   (e.g. RMap and RList instead of HashMap and LinkedList)
+        channelsStore.put(topic.getId(), viewpointChannelsMap);
 
         return new Channel(channelId);
     }

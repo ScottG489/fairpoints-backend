@@ -40,19 +40,9 @@ public class ChannelResource {
         Viewpoint viewpoint = new Viewpoint(viewpointStance);
 
         Channel channel = channelDeterminer.determineChannel(topic, viewpoint, channelsStore);
-//        redisHack(topicId, topic);
 
         ChannelResponse response = new ChannelResponse();
         response.id = channel.getId();
         return Response.ok(response).build();
-    }
-
-    // TODO: Because there is no memory reference back to the original topic we need to manually put
-    // TODO:   the entry back into redis. This hack may go away if we start using native redisson types
-    // TODO:   (e.g. RMap and RList instead of HashMap and LinkedList)
-    private void redisHack(@QueryParam("topicId") @NotEmpty String topicId, Topic topic) {
-        Map<String, LinkedList<String>> viewpointChannelsMap =
-                channelsStore.getOrDefault(topic.getId(), new HashMap<>());
-        channelsStore.put(topicId, viewpointChannelsMap);
     }
 }
