@@ -46,7 +46,7 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
                 configuration.getTwilioApiKey(),
                 configuration.getTwilioApiSecret(),
                 configuration.getTwilioChatServiceSid()));
-        environment.jersey().register(new ChatResource(new ChannelDeterminer(), getInMemoryChannelsStore()));
+        environment.jersey().register(new ChannelResource(new ChannelDeterminer(), getInMemoryChannelsStore()));
 
         environment.healthChecks().register("version", new VersionCheck());
     }
