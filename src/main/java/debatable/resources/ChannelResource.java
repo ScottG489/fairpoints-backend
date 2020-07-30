@@ -1,5 +1,6 @@
 package debatable.resources;
 
+import debatable.api.ChannelResponse;
 import debatable.core.ChannelDeterminer;
 import debatable.core.model.Channel;
 import debatable.core.model.Topic;
@@ -41,7 +42,9 @@ public class ChannelResource {
         Channel channel = channelDeterminer.determineChannel(topic, viewpoint, channelsStore);
 //        redisHack(topicId, topic);
 
-        return Response.ok(channel).build();
+        ChannelResponse response = new ChannelResponse();
+        response.id = channel.getId();
+        return Response.ok(response).build();
     }
 
     // TODO: Because there is no memory reference back to the original topic we need to manually put
