@@ -1,7 +1,7 @@
 package debatable.resources;
 
-import debatable.core.model.Channel;
 import debatable.core.ChannelDeterminer;
+import debatable.core.model.Channel;
 import debatable.core.model.Topic;
 import debatable.core.model.Viewpoint;
 import lombok.extern.slf4j.Slf4j;
