@@ -14,9 +14,6 @@ import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -64,17 +61,5 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
         DynamoDB db = new DynamoDB(client);
 
         return db.getTable("Channels");
-    }
-
-//    private RedisChannelRetriever getRedisChannelRetriever() {
-//        Map<String, Map<String, LinkedList<String>>> topics = getRedisTopics();
-//        return new RedisChannelRetriever();
-//    }
-
-    private Map<String, Map<String, LinkedList<String>>> getRedisChannelsStore() {
-        Config config = new Config();
-        config.useSingleServer().setAddress("redis://localhost:6379");
-        RedissonClient redisson = Redisson.create(config);
-        return redisson.getMap("topics");
     }
 }
