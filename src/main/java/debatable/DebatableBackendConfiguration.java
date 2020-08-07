@@ -9,4 +9,5 @@ public class DebatableBackendConfiguration extends Configuration {
     private String twilioApiKey;
     private String twilioApiSecret;
     private String twilioChatServiceSid;
+    private String dynamodbTable;
 }

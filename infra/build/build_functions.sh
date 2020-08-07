@@ -118,6 +118,24 @@ tf_prod_apply() {
   terraform apply --auto-approve
 }
 
+setup_application_configuration() {
+  local ROOT_DIR
+  local DYNAMODB_TABLE
+  local RELATIVE_PATH_TO_TF_DIR
+
+  readonly ROOT_DIR=$(get_git_root_dir)
+  readonly RELATIVE_PATH_TO_TF_DIR=$1
+
+  cd "$ROOT_DIR/$RELATIVE_PATH_TO_TF_DIR"
+
+  readonly DYNAMODB_TABLE=$(terraform show --json | jq --raw-output '.values.outputs.dynamodb_table.value')
+  [[ -n $DYNAMODB_TABLE ]]
+
+  {
+    echo "dynamodb_table: $DYNAMODB_TABLE"
+  } >> "$ROOT_DIR/infra/ansible/vars.yml"
+}
+
 ansible_deploy() {
   local ROOT_DIR
   local RELATIVE_PATH_TO_TF_DIR

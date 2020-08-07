@@ -20,7 +20,6 @@ build_push_application "$_DOCKER_IMAGE_NAME"
 /opt/build/run-test.sh
 
 tf_backend_init "$_TFSTATE_BUCKET_NAME"
-
 tf_prod_apply "infra/tf"
-
+setup_application_configuration "infra/tf"
 ansible_deploy "infra/tf"
