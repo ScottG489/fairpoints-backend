@@ -13,10 +13,11 @@ module "helpers_spot_instance_ssh" {
   public_key = var.public_key
 }
 
-module "simple_ci" {
+module "debatable_backend" {
   source = "../modules/debatable_backend_core"
   domain_name = "${random_id.name_prefix.hex}.com"
   public_ip = module.helpers_spot_instance_ssh.public_ip
+  table_name = "${random_id.name_prefix.hex}-${var.table_name_prefix}"
 }
 
 resource "random_id" "name_prefix" {

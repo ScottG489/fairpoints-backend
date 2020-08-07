@@ -25,6 +25,7 @@ module "debatable_backend" {
   source = "./modules/debatable_backend_core"
   domain_name = var.domain_name
   public_ip = module.helpers_spot_instance_ssh.public_ip
+  table_name = "Channels"
 }
 
 // TODO: It's hacky but since we use but don't manage the hosted zone. The frontend project does.
