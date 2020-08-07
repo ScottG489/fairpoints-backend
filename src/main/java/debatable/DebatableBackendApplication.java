@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
-import debatable.core.ChannelDeterminer;
+import debatable.core.DynamoDbChannelDeterminer;
 import debatable.health.VersionCheck;
 import debatable.resources.ChannelResource;
 import debatable.resources.TokenResource;
@@ -47,19 +47,22 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
                 configuration.getTwilioApiKey(),
                 configuration.getTwilioApiSecret(),
                 configuration.getTwilioChatServiceSid()));
-        environment.jersey().register(new ChannelResource(new ChannelDeterminer(), getInMemoryChannelsStore()));
+//        environment.jersey().register(new ChannelResource(new ChannelDeterminer(), getInMemoryChannelsStore()));
+        environment.jersey().register(
+                new ChannelResource(
+                        new DynamoDbChannelDeterminer(), getChannelsTable(configuration.getDynamodbTable())));
 
         environment.healthChecks().register("version", new VersionCheck());
     }
 
-    private Map<String, Map<String, LinkedList<String>>> getInMemoryChannelsStore() {
-        return new HashMap<>();
-    }
-
-    private Table getChannelsTable() {
+    private Table getChannelsTable(String dynamodbTable) {
         AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
         DynamoDB db = new DynamoDB(client);
 
-        return db.getTable("Channels");
+        return db.getTable(dynamodbTable);
+    }
+
+    private Map<String, Map<String, LinkedList<String>>> getInMemoryChannelsStore() {
+        return new HashMap<>();
     }
 }

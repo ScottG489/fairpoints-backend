@@ -25,7 +25,7 @@ class ChannelSimulation extends Simulation {
   )
     .protocols(httpProtocol)
     .assertions(
-      global.responseTime.mean.lt(500),
+      global.responseTime.mean.lt(5000),
       global.failedRequests.count.is(0)
     )
 }

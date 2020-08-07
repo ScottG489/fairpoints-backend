@@ -1,7 +1,9 @@
 package debatable.resources;
 
+import com.amazonaws.services.dynamodbv2.document.Table;
 import debatable.api.ChannelResponse;
 import debatable.core.ChannelDeterminer;
+import debatable.core.DynamoDbChannelDeterminer;
 import debatable.core.model.Channel;
 import debatable.core.model.Topic;
 import debatable.core.model.Viewpoint;
@@ -14,21 +16,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 @Path("/chat/channel")
 @Slf4j
 public class ChannelResource {
-    private final ChannelDeterminer channelDeterminer;
-    Map<String, Map<String, LinkedList<String>>> channelsStore;
+    private final DynamoDbChannelDeterminer channelDeterminer;
+    private final Table channelsTable;
 
     public ChannelResource(
-            ChannelDeterminer channelDeterminer,
-            Map<String, Map<String, LinkedList<String>>> channelsStore) {
+            DynamoDbChannelDeterminer channelDeterminer,
+            Table channelsTable) {
         this.channelDeterminer = channelDeterminer;
-        this.channelsStore = channelsStore;
+        this.channelsTable = channelsTable;
     }
 
     @GET
@@ -39,7 +38,7 @@ public class ChannelResource {
         Topic topic = new Topic(topicId);
         Viewpoint viewpoint = new Viewpoint(viewpointStance);
 
-        Channel channel = channelDeterminer.determineChannel(topic, viewpoint, channelsStore);
+        Channel channel = channelDeterminer.determineChannel(topic, viewpoint, channelsTable);
 
         ChannelResponse response = new ChannelResponse();
         response.id = channel.getId();
