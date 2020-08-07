@@ -1,5 +1,9 @@
 package debatable;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import debatable.core.ChannelDeterminer;
 import debatable.health.VersionCheck;
 import debatable.resources.ChannelResource;
@@ -53,6 +57,13 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
 
     private Map<String, Map<String, LinkedList<String>>> getInMemoryChannelsStore() {
         return new HashMap<>();
+    }
+
+    private Table getChannelsTable() {
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
+        DynamoDB db = new DynamoDB(client);
+
+        return db.getTable("Channels");
     }
 
 //    private RedisChannelRetriever getRedisChannelRetriever() {
