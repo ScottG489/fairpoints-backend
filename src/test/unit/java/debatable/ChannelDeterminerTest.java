@@ -14,8 +14,6 @@ import java.util.Map;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-// TODO: This class feels a bit too high level. I'm not sure if we should be unit testing the chat
-// TODO:   resource rather than the channel retriever.
 public class ChannelDeterminerTest {
     private ChannelDeterminer channelDeterminer;
     private Map<String, Map<String, LinkedList<String>>> channelsStore = new HashMap<>();
@@ -57,7 +55,6 @@ public class ChannelDeterminerTest {
         Channel channel2 = channelDeterminer.determineChannel(new Topic("topic"), new Viewpoint("agree"), channelsStore);
         Channel channel3 = channelDeterminer.determineChannel(new Topic("topic"), new Viewpoint("disagree"), channelsStore);
         Channel channel4 = channelDeterminer.determineChannel(new Topic("topic"), new Viewpoint("disdisagree"), channelsStore);
-
 
         assertThat(channel, is(channel3));
         assertThat(channel2, is(channel4));
