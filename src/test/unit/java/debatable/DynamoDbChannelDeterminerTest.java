@@ -15,12 +15,14 @@ import debatable.core.model.Topic;
 import debatable.core.model.Viewpoint;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 // TODO: If we're getting a real table then this isn't a unit test. Reduce scope
+@Ignore
 public class DynamoDbChannelDeterminerTest {
     private DynamoDbChannelDeterminer channelDeterminer;
     private Table channelsTable;

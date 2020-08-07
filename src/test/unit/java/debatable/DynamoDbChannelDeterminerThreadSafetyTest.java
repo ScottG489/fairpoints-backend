@@ -13,6 +13,7 @@ import debatable.core.model.Topic;
 import debatable.core.model.Viewpoint;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -27,6 +28,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 // TODO: If we're getting a real table then this isn't a unit test. Reduce scope
+@Ignore
 @RunWith(Parameterized.class)
 public class DynamoDbChannelDeterminerThreadSafetyTest {
     private DynamoDbChannelDeterminer channelDeterminer;
