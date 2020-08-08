@@ -138,15 +138,14 @@ setup_application_configuration() {
   readonly DYNAMODB_TABLE=$(terraform show --json | jq --raw-output '.values.outputs.dynamodb_table.value')
   [[ -n $DYNAMODB_TABLE ]]
 
-    echo -n "twilio:
-  account_sid: $TWILIO_ACCOUNT_SID
-  api_key: $TWILIO_API_KEY
-  api_secret: $TWILIO_API_SECRET
-  chat_service_sid: $TWILIO_CHAT_SERVICE_SID
-aws:
-  access_key_id: ${AWS_ACCESS_KEY_ID}
-  secret_access_key: ${AWS_SECRET_ACCESS_KEY}
-  dynamodb_table: $DYNAMODB_TABLE" >> "$ROOT_DIR/infra/ansible/vars.yml"
+  # These are used in the ansible playbook
+  export _TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID
+  export _TWILIO_API_KEY=$TWILIO_API_KEY
+  export _TWILIO_API_SECRET=$TWILIO_API_SECRET
+  export _TWILIO_CHAT_SERVICE_SID=$TWILIO_CHAT_SERVICE_SID
+  export _AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+  export _AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+  export _DYNAMODB_TABLE=$DYNAMODB_TABLE
 }
 
 ansible_deploy() {
