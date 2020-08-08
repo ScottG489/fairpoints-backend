@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-west-2"
-}
-
 resource "aws_route53_zone" "r53_zone" {
   name = var.domain_name
 }
