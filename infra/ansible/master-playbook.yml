@@ -39,11 +39,13 @@
       docker run --detach \
         -p 80:8080 \
         -p 8081:8081 \
-        -e TWILIO_ACCOUNT_SID={{ twilio_account_sid }} \
-        -e TWILIO_API_KEY={{ twilio_api_key }} \
-        -e TWILIO_API_SECRET={{ twilio_api_secret }} \
-        -e TWILIO_CHAT_SERVICE_SID={{ twilio_chat_service_sid }} \
-        -e DYNAMODB_TABLE={{ dynamodb_table }} \
+        -e TWILIO_ACCOUNT_SID={{ twilio.account_sid }} \
+        -e TWILIO_API_KEY={{ twilio.api_key }} \
+        -e TWILIO_API_SECRET={{ twilio.api_secret }} \
+        -e TWILIO_CHAT_SERVICE_SID={{ twilio.chat_service_sid }} \
+        -e AWS_ACCESS_KEY_ID={{ aws.access_key_id }} \
+        -e AWS_SECRET_ACCESS_KEY={{ aws.secret_access_key }} \
+        -e DYNAMODB_TABLE={{ aws.dynamodb_table }} \
         --name {{ container_name }} {{ image_name }}
 
   - name: Wait for service to be healthy

@@ -16,6 +16,10 @@ setup_credentials() {
   readonly MAINKEYPAIR_CONTENTS=$(echo -n "$1" | jq -r .MAIN_KEY_PAIR | base64 --decode)
   readonly AWS_CREDENTIALS_CONTENTS=$(echo -n "$1" | jq -r .AWS_CREDENTIALS | base64 --decode)
   readonly DOCKER_CONFIG_CONTENTS=$(echo -n "$1" | jq -r .DOCKER_CONFIG | base64 --decode)
+  [[ -n $ID_RSA_CONTENTS ]]
+  [[ -n $MAINKEYPAIR_CONTENTS ]]
+  [[ -n $AWS_CREDENTIALS_CONTENTS ]]
+  [[ -n $DOCKER_CONFIG_CONTENTS ]]
 
   printf -- "$ID_RSA_CONTENTS" >/root/.ssh/id_rsa
   printf -- "$MAINKEYPAIR_CONTENTS" >/root/.ssh/mainkeypair.pem
@@ -24,29 +28,6 @@ setup_credentials() {
 
   chmod 400 /root/.ssh/id_rsa
   chmod 400 /root/.ssh/mainkeypair.pem
-}
-
-setup_token_server_creds() {
-  set +x
-  local ROOT_DIR
-  local TWILIO_ACCOUNT_SID
-  local TWILIO_API_KEY
-  local TWILIO_API_SECRET
-  local TWILIO_CHAT_SERVICE_SID
-
-  readonly ROOT_DIR=$(get_git_root_dir)
-
-  readonly TWILIO_ACCOUNT_SID=$(echo -n $1 | jq -r .TWILIO_ACCOUNT_SID | base64 --decode)
-  readonly TWILIO_API_KEY=$(echo -n $1 | jq -r .TWILIO_API_KEY | base64 --decode)
-  readonly TWILIO_API_SECRET=$(echo -n $1 | jq -r .TWILIO_API_SECRET | base64 --decode)
-  readonly TWILIO_CHAT_SERVICE_SID=$(echo -n $1 | jq -r .TWILIO_CHAT_SERVICE_SID | base64 --decode)
-
-  {
-    echo "twilio_account_sid: $TWILIO_ACCOUNT_SID"
-    echo "twilio_api_key: $TWILIO_API_KEY"
-    echo "twilio_api_secret: $TWILIO_API_SECRET"
-    echo "twilio_chat_service_sid: $TWILIO_CHAT_SERVICE_SID"
-  } >> "$ROOT_DIR/infra/ansible/vars.yml"
 }
 
 build_push_application() {
@@ -119,21 +100,53 @@ tf_prod_apply() {
 }
 
 setup_application_configuration() {
+  set +x
+  [[ -n $1 ]]
+  [[ -n $2 ]]
   local ROOT_DIR
-  local DYNAMODB_TABLE
   local RELATIVE_PATH_TO_TF_DIR
+  local BUILD_SCRIPT_JSON_INPUT
+  local TWILIO_ACCOUNT_SID
+  local TWILIO_API_KEY
+  local TWILIO_API_SECRET
+  local TWILIO_CHAT_SERVICE_SID
+  local AWS_ACCESS_KEY_ID
+  local AWS_SECRET_ACCESS_KEY
+  local DYNAMODB_TABLE
 
   readonly ROOT_DIR=$(get_git_root_dir)
-  readonly RELATIVE_PATH_TO_TF_DIR=$1
+  readonly BUILD_SCRIPT_JSON_INPUT=$1
+  readonly RELATIVE_PATH_TO_TF_DIR=$2
+
+  readonly TWILIO_ACCOUNT_SID=$(echo -n "$BUILD_SCRIPT_JSON_INPUT" | jq -r .TWILIO_ACCOUNT_SID | base64 --decode)
+  readonly TWILIO_API_KEY=$(echo -n "$BUILD_SCRIPT_JSON_INPUT" | jq -r .TWILIO_API_KEY | base64 --decode)
+  readonly TWILIO_API_SECRET=$(echo -n "$BUILD_SCRIPT_JSON_INPUT" | jq -r .TWILIO_API_SECRET | base64 --decode)
+  readonly TWILIO_CHAT_SERVICE_SID=$(echo -n "$BUILD_SCRIPT_JSON_INPUT" | jq -r .TWILIO_CHAT_SERVICE_SID | base64 --decode)
+  [[ -n $TWILIO_ACCOUNT_SID ]]
+  [[ -n $TWILIO_API_KEY ]]
+  [[ -n $TWILIO_API_SECRET ]]
+  [[ -n $TWILIO_CHAT_SERVICE_SID ]]
+
+  readonly AWS_ACCESS_KEY_ID=$(echo -n "$BUILD_SCRIPT_JSON_INPUT" | jq -r .AWS_ACCESS_KEY_ID | base64 --decode)
+  readonly AWS_SECRET_ACCESS_KEY=$(echo -n "$BUILD_SCRIPT_JSON_INPUT" | jq -r .AWS_SECRET_ACCESS_KEY | base64 --decode)
+  [[ -n $AWS_ACCESS_KEY_ID ]]
+  [[ -n $AWS_SECRET_ACCESS_KEY ]]
+
 
   cd "$ROOT_DIR/$RELATIVE_PATH_TO_TF_DIR"
 
   readonly DYNAMODB_TABLE=$(terraform show --json | jq --raw-output '.values.outputs.dynamodb_table.value')
   [[ -n $DYNAMODB_TABLE ]]
 
-  {
-    echo "dynamodb_table: $DYNAMODB_TABLE"
-  } >> "$ROOT_DIR/infra/ansible/vars.yml"
+    echo -n "twilio:
+  account_sid: $TWILIO_ACCOUNT_SID
+  api_key: $TWILIO_API_KEY
+  api_secret: $TWILIO_API_SECRET
+  chat_service_sid: $TWILIO_CHAT_SERVICE_SID
+aws:
+  access_key_id: ${AWS_ACCESS_KEY_ID}
+  secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+  dynamodb_table: $DYNAMODB_TABLE" >> "$ROOT_DIR/infra/ansible/vars.yml"
 }
 
 ansible_deploy() {

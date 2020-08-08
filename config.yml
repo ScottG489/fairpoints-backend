@@ -2,4 +2,8 @@ twilioAccountSid: ${TWILIO_ACCOUNT_SID}
 twilioApiKey: ${TWILIO_API_KEY}
 twilioApiSecret: ${TWILIO_API_SECRET}
 twilioChatServiceSid: ${TWILIO_CHAT_SERVICE_SID}
-dynamodbTable: ${DYNAMODB_TABLE}
+aws:
+  region: us-west-2
+  accessKeyId: ${AWS_ACCESS_KEY_ID}
+  secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+  dynamoDbTable: ${DYNAMODB_TABLE}

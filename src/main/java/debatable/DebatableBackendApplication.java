@@ -1,5 +1,7 @@
 package debatable;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -50,16 +52,22 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
 //        environment.jersey().register(new ChannelResource(new ChannelDeterminer(), getInMemoryChannelsStore()));
         environment.jersey().register(
                 new ChannelResource(
-                        new DynamoDbChannelDeterminer(), getChannelsTable(configuration.getDynamodbTable())));
+                        new DynamoDbChannelDeterminer(),
+                        getChannelsTable(configuration.getAws())));
 
         environment.healthChecks().register("version", new VersionCheck());
     }
 
-    private Table getChannelsTable(String dynamodbTable) {
-        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
+    private Table getChannelsTable(DebatableBackendConfiguration.AwsConfiguration awsConfig) {
+        BasicAWSCredentials awsCreds =
+                new BasicAWSCredentials(awsConfig.getAccessKeyId(), awsConfig.getSecretAccessKey());
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+                .withRegion(awsConfig.getRegion())
+                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                .build();
         DynamoDB db = new DynamoDB(client);
 
-        return db.getTable(dynamodbTable);
+        return db.getTable(awsConfig.getDynamoDbTable());
     }
 
     private Map<String, Map<String, LinkedList<String>>> getInMemoryChannelsStore() {

@@ -11,15 +11,13 @@ set -x
 git clone "$_GIT_REPO"
 cd "$_PROJECT_NAME"
 
-set +x
-setup_token_server_creds "$1"
-set -x
-
 build_push_application "$_DOCKER_IMAGE_NAME"
 
-/opt/build/run-test.sh
+/opt/build/run-test.sh "$1"
 
 tf_backend_init "$_TFSTATE_BUCKET_NAME"
 tf_prod_apply "infra/tf"
-setup_application_configuration "infra/tf"
+set +x
+setup_application_configuration "$1" "infra/tf"
+set -x
 ansible_deploy "infra/tf"
