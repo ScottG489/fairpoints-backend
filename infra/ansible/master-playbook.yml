@@ -33,6 +33,9 @@
   # TODO:   change otherwise.
   - name: Run application container
     become: yes
+    # TODO: It isn't ideal that we silence output here because some could be useful to know. We should
+    # TODO:   try using a docker env file (--env-file) instead.
+    no_log: True
     shell: |
       docker rm --force {{ container_name }}
       docker pull {{ image_name }}
