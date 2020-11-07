@@ -13,7 +13,9 @@ cd "$_PROJECT_NAME"
 
 build_push_application "$_DOCKER_IMAGE_NAME"
 
+set +x
 /opt/build/run-test.sh "$1"
+set -x
 
 tf_backend_init "$_TFSTATE_BUCKET_NAME"
 tf_prod_apply "infra/tf"
