@@ -8,6 +8,10 @@ set +x
 setup_credentials "$1"
 set -x
 
+# Start the docker daemon. This is necessary when using the sysbox-runc container runtime rather than mounting docker.sock
+dockerd > /var/log/dockerd.log 2>&1 &
+sleep 3
+
 git clone "$_GIT_REPO"
 cd "$_PROJECT_NAME"
 
