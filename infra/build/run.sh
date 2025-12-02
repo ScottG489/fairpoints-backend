@@ -12,7 +12,7 @@ set -x
 dockerd > /var/log/dockerd.log 2>&1 &
 sleep 3
 
-git clone "$_GIT_REPO"
+[ -d "$_PROJECT_NAME" ] || git clone "$_GIT_REPO"
 cd "$_PROJECT_NAME"
 
 build_push_application "$_DOCKER_IMAGE_NAME"
