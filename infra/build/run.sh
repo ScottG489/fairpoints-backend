@@ -21,6 +21,7 @@ set +x
 /opt/build/run-test.sh "$1"
 set -x
 
+exit
 tf_backend_init "$_TFSTATE_BUCKET_NAME"
 tf_prod_apply "infra/tf"
 set +x
