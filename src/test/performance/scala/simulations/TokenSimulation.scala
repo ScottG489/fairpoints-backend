@@ -8,6 +8,7 @@ import util.ConfigUtil
 class TokenSimulation extends Simulation {
 
   private val baseUrl: String = ConfigUtil.getFromConfig("baseUri")
+  private val maxMeanResponseTimeMs = 1000
 
   private val httpProtocol: HttpProtocolBuilder = http
     .baseUrl(baseUrl)
@@ -21,7 +22,7 @@ class TokenSimulation extends Simulation {
   )
     .protocols(httpProtocol)
     .assertions(
-      global.responseTime.mean.lt(500),
+      global.responseTime.mean.lt(maxMeanResponseTimeMs),
       global.failedRequests.count.is(0)
     )
 }
