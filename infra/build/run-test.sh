@@ -9,9 +9,11 @@ cleanup() {
   terraform destroy --auto-approve
 }
 
+declare -r _DOCKER_IMAGE_TAG=$2
+
 tf_apply "infra/tf/test-env"
 set +x
 setup_application_configuration "$1" "infra/tf/test-env"
 set -x
-ansible_deploy "infra/tf/test-env"
+ansible_deploy "infra/tf/test-env" $_DOCKER_IMAGE_TAG
 run_tests "infra/tf/test-env"

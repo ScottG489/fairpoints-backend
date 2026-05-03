@@ -30,18 +30,20 @@ setup_credentials() {
   chmod 400 /root/.ssh/mainkeypair.pem
 }
 
-build_push_application() {
+build_test() {
   local ROOT_DIR
-  local DOCKER_IMAGE_NAME
   readonly ROOT_DIR=$(get_git_root_dir)
-  readonly DOCKER_IMAGE_NAME=$1
-
   cd "$ROOT_DIR"
 
   ./gradlew --info build unitTest install
 
-  docker build -t "$DOCKER_IMAGE_NAME" .
-  docker push "$DOCKER_IMAGE_NAME"
+  docker build -t scottg489/debatable-backend .
+}
+
+push_application() {
+  declare -r DOCKER_IMAGE_TAG=$1
+  docker tag scottg489/debatable-backend scottg489/debatable-backend:$DOCKER_IMAGE_TAG
+  docker push scottg489/debatable-backend:$DOCKER_IMAGE_TAG
 }
 
 tf_backend_init() {
@@ -152,9 +154,11 @@ ansible_deploy() {
   local ROOT_DIR
   local RELATIVE_PATH_TO_TF_DIR
   local PUBLIC_IP
+  local DOCKER_IMAGE_TAG
 
   readonly ROOT_DIR=$(get_git_root_dir)
   readonly RELATIVE_PATH_TO_TF_DIR=$1
+  readonly DOCKER_IMAGE_TAG=$2
 
   cd "$ROOT_DIR/$RELATIVE_PATH_TO_TF_DIR"
 
@@ -162,6 +166,9 @@ ansible_deploy() {
   [[ -n $PUBLIC_IP ]]
 
   cd "$ROOT_DIR/infra/ansible"
+
+  export _APP_DOCKER_IMAGE_TAG=$DOCKER_IMAGE_TAG
+
   ansible-playbook -v -u ubuntu -e ansible_ssh_private_key_file=/root/.ssh/mainkeypair.pem --inventory "$PUBLIC_IP", master-playbook.yml
 }
 

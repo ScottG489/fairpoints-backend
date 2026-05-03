@@ -1,19 +1,25 @@
 #!/usr/bin/env bash
 
-readonly IMAGE_NAME='scottg489/debatable-backend-build:latest'
-readonly ID_RSA=$1
-readonly DOCKER_CONFIG=$2
-readonly AWS_CREDENTIALS=$3
-readonly MAIN_KEY_PAIR=$4
-readonly TWILIO_ACCOUNT_SID=$5
-readonly TWILIO_API_KEY=$6
-readonly TWILIO_API_SECRET=$7
-readonly TWILIO_CHAT_SERVICE_SID=$8
-readonly AWS_ACCESS_KEY_ID=$9
-readonly AWS_SECRET_ACCESS_KEY=${10}
+readonly GIT_BRANCH=${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}
+readonly DOCKER_IMAGE_TAG=$([[ $GIT_BRANCH == "master" ]] && echo -n "latest" || sed 's/[^a-zA-Z0-9]/-/g' <<< "$GIT_BRANCH")
+readonly IMAGE_NAME="scottg489/debatable-backend-build:$DOCKER_IMAGE_TAG"
+readonly RUN_TASK=$1
+readonly ID_RSA=$2
+readonly DOCKER_CONFIG=$3
+readonly AWS_CREDENTIALS=$4
+readonly MAIN_KEY_PAIR=$5
+readonly TWILIO_ACCOUNT_SID=$6
+readonly TWILIO_API_KEY=$7
+readonly TWILIO_API_SECRET=$8
+readonly TWILIO_CHAT_SERVICE_SID=$9
+readonly AWS_ACCESS_KEY_ID=${10}
+readonly AWS_SECRET_ACCESS_KEY=${11}
 
 read -r -d '' JSON_BODY <<- EOM
   {
+  "RUN_TASK": "$RUN_TASK",
+  "GIT_BRANCH": "$GIT_BRANCH",
+  "DOCKER_IMAGE_TAG": "$DOCKER_IMAGE_TAG",
   "ID_RSA": "$ID_RSA",
   "DOCKER_CONFIG": "$DOCKER_CONFIG",
   "AWS_CREDENTIALS": "$AWS_CREDENTIALS",
