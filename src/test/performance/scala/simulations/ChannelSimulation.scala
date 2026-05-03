@@ -9,24 +9,30 @@ import util.ConfigUtil
 class ChannelSimulation extends Simulation {
 
   private val baseUrl: String = ConfigUtil.getFromConfig("baseUri")
-  private val maxMeanResponseTimeMs = 30000
+  private val maxMeanResponseTimeMs = 20000
+
+  private val channelFeeder = Iterator.from(0).map { id =>
+    Map(
+      "topic" -> "topicA",
+      "viewpoint" -> (if (id % 2 == 0) "agree" else "disagree"),
+      "identity" -> s"perf-$id-${UUID.randomUUID()}"
+    )
+  }
 
   private val httpProtocol: HttpProtocolBuilder = http
     .baseUrl(baseUrl)
   private val request = http("Channel request")
     .get("/chat/channel")
-    .queryParam("topicId", "${topic}")
-    .queryParam("viewpoint", "${viewpoint.random()}")
-    .queryParam("identity", "${identity}")
+    .queryParam("topicId", "#{topic}")
+    .queryParam("viewpoint", "#{viewpoint}")
+    .queryParam("identity", "#{identity}")
   private val scn: ScenarioBuilder = scenario("Channel Simulation")
-    .exec(_.set("topic", "topicA"))
-    .exec(_.set("viewpoint", List("agree", "disagree")))
-    .exec(session => session.set("identity", s"perf-${session.userId}-${UUID.randomUUID()}"))
+    .feed(channelFeeder)
     .exec(request)
 
   setUp(
     scn.inject(atOnceUsers(100))
-    )
+  )
     .protocols(httpProtocol)
     .assertions(
       global.responseTime.mean.lt(maxMeanResponseTimeMs),
