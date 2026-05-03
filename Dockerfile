@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11@sha256:189ce1c8831fa5bdd801127dad99f68a17615f81f4aa839b1a4aae693261929a
+FROM eclipse-temurin:17@sha256:aae0b1494a5637b2c1b933080088ccc196dec7ffb83ce1cd524211ea4f640ff4
 
 RUN mkdir /opt/app
 COPY build/install/service/ /opt/app

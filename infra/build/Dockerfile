@@ -4,7 +4,7 @@ RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y \
   git \
   docker.io \
-  openjdk-11-jdk \
+  openjdk-17-jdk \
   jq \
   ansible \
   curl \

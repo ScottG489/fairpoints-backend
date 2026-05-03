@@ -4,6 +4,8 @@ import debatable.api.ChannelResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.UUID;
+
 import static debatable.util.RestAssuredUtil.setBaseUri;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -24,81 +26,45 @@ public class ChannelResourceTest {
 
     @Test
     public void shouldGetSameChannelForOpposingViewpoints() {
-        String topicA = "topicA";
+        String topicA = uniqueTopic();
         String agreeViewpoint = "agree";
         String disagreeViewpoint = "disagree";
 
-        ChannelResponse channelResponse =
-                given()
-                        .queryParam("topicId", topicA)
-                        .queryParam("viewpoint", agreeViewpoint)
-                .when()
-                        .get("/chat/channel")
-                .then()
-                        .extract()
-                        .as(ChannelResponse.class);
-
-        ChannelResponse channelResponse2 =
-                given()
-                        .queryParam("topicId", topicA)
-                        .queryParam("viewpoint", disagreeViewpoint)
-                .when()
-                        .get("/chat/channel")
-                .then()
-                        .extract()
-                        .as(ChannelResponse.class);
+        ChannelResponse channelResponse = getChannel(topicA, agreeViewpoint, "acceptance-test-1");
+        ChannelResponse channelResponse2 = getChannel(topicA, disagreeViewpoint, "acceptance-test-2");
 
         assertThat(channelResponse.id, is(channelResponse2.id));
     }
 
     @Test
     public void shouldGetDifferentChannelAfterOthersHaveBeenMatched() {
-        String topicA = "topicA";
+        String topicA = uniqueTopic();
         String agreeViewpoint = "agree";
         String disagreeViewpoint = "disagree";
 
-        ChannelResponse channelResponse =
-                given()
-                        .queryParam("topicId", topicA)
-                        .queryParam("viewpoint", agreeViewpoint)
-                .when()
-                        .get("/chat/channel")
-                .then()
-                        .extract()
-                        .as(ChannelResponse.class);
-
-        ChannelResponse channelResponse2 =
-                given()
-                        .queryParam("topicId", topicA)
-                        .queryParam("viewpoint", disagreeViewpoint)
-                .when()
-                        .get("/chat/channel")
-                .then()
-                        .extract()
-                        .as(ChannelResponse.class);
-
-        ChannelResponse channelResponse3 =
-                given()
-                        .queryParam("topicId", topicA)
-                        .queryParam("viewpoint", agreeViewpoint)
-                .when()
-                        .get("/chat/channel")
-                .then()
-                        .extract()
-                        .as(ChannelResponse.class);
-
-        ChannelResponse channelResponse4 =
-                given()
-                        .queryParam("topicId", topicA)
-                        .queryParam("viewpoint", disagreeViewpoint)
-                .when()
-                        .get("/chat/channel")
-                .then()
-                        .extract()
-                        .as(ChannelResponse.class);
+        ChannelResponse channelResponse = getChannel(topicA, agreeViewpoint, "acceptance-test-3");
+        ChannelResponse channelResponse2 = getChannel(topicA, disagreeViewpoint, "acceptance-test-4");
+        ChannelResponse channelResponse3 = getChannel(topicA, agreeViewpoint, "acceptance-test-5");
+        ChannelResponse channelResponse4 = getChannel(topicA, disagreeViewpoint, "acceptance-test-6");
 
         assertThat(channelResponse3.id, is(not(channelResponse.id)));
         assertThat(channelResponse3.id, is(not(channelResponse2.id)));
         assertThat(channelResponse3.id, is(channelResponse4.id));
+    }
+
+    private ChannelResponse getChannel(String topicId, String viewpoint, String identity) {
+        return given()
+                .queryParam("topicId", topicId)
+                .queryParam("viewpoint", viewpoint)
+                .queryParam("identity", identity)
+        .when()
+                .get("/chat/channel")
+        .then()
+                .extract()
+                .as(ChannelResponse.class);
+    }
+
+    private String uniqueTopic() {
+        return "topic-" + UUID.randomUUID();
     }
 }

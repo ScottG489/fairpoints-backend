@@ -1,4 +1,7 @@
-installDist {
+application {
     applicationName = 'start-server'
+}
+
+installDist {
     destinationDir = new File("$buildDir/install/service")
 }

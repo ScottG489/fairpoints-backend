@@ -9,4 +9,8 @@ task generateVersionResourceFile {
     }
 }
 
+processResources {
+    exclude 'version.properties'
+}
+
 sourceSets.main.output.dir generatedResourceDir, builtBy: generateVersionResourceFile

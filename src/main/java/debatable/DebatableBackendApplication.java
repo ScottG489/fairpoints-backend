@@ -11,6 +11,7 @@ import debatable.health.VersionCheck;
 import debatable.resources.ChannelResource;
 import debatable.resources.TokenResource;
 import debatable.resources.filter.EveryResponseFilter;
+import debatable.twilio.TwilioConversationService;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
@@ -49,11 +50,19 @@ public class DebatableBackendApplication extends Application<DebatableBackendCon
                 configuration.getTwilioApiKey(),
                 configuration.getTwilioApiSecret(),
                 configuration.getTwilioChatServiceSid()));
-//        environment.jersey().register(new ChannelResource(new ChannelDeterminer(), getInMemoryChannelsStore()));
+
+        TwilioConversationService twilioConversationService = new TwilioConversationService(
+                configuration.getTwilioAccountSid(),
+                configuration.getTwilioApiKey(),
+                configuration.getTwilioApiSecret(),
+                configuration.getTwilioChatServiceSid());
+
+//        environment.jersey().register(new ChannelResource(new ChannelDeterminer(), getInMemoryChannelsStore(), twilioConversationService));
         environment.jersey().register(
                 new ChannelResource(
                         new DynamoDbChannelDeterminer(),
-                        getChannelsTable(configuration.getAws())));
+                        getChannelsTable(configuration.getAws()),
+                        twilioConversationService));
 
         environment.healthChecks().register("version", new VersionCheck());
     }
