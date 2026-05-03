@@ -32,7 +32,7 @@ set -x
 [ "$_RUN_TASK" != "deploy" ] && exit 0
 
 # Prod deploy is currently disabled. Remove the line below to re-enable.
-exit
+exit 0
 
 push_application "latest"
 
