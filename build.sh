@@ -35,7 +35,7 @@ EOM
 
 curl -v -sS -w '\n%{http_code}' \
   --data-binary "$JSON_BODY" \
-  "http://api.conjob.io/job/run?image=$IMAGE_NAME&remove=true" \
+  "http://api.conjob.io/job/run?image=$IMAGE_NAME&remove=true&remove_image=true" \
   | tee /tmp/foo \
   | sed '$d' && \
   [ "$(tail -1 /tmp/foo)" -eq 200 ]
