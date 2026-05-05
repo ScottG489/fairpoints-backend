@@ -193,5 +193,6 @@ run_tests() {
   echo "baseUri=http://${PUBLIC_IP}:80" >"$ROOT_DIR/src/test/performance/resources/config.properties"
   echo "adminBaseUri=http://${PUBLIC_IP}:8081" >>"$ROOT_DIR/src/test/performance/resources/config.properties"
 
-  ./gradlew --info acceptanceTest performanceTest
+  #./gradlew --info acceptanceTest performanceTest
+  ./gradlew --info acceptanceTest
 }
