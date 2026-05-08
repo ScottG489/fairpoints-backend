@@ -7,10 +7,10 @@ plugins {
     id 'info.solidsoft.pitest' version '1.19.0'
 }
 
-group = 'debatable'
+group = 'fairpoints'
 
 application {
-    mainClass = 'debatable.DebatableBackendApplication'
+    mainClass = 'fairpoints.FairPointsBackendApplication'
 }
 
 dependencies {

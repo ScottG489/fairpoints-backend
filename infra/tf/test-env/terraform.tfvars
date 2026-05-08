@@ -1,4 +1,4 @@
-name_prefix       = "debatable-backend-test"
+name_prefix       = "fairpoints-backend-test"
 instance_type     = "t2.small"
 spot_type         = "one-time"
 spot_price        = "0.008"

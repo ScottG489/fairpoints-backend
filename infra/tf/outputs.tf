@@ -3,5 +3,5 @@ output "instance_public_ip" {
 }
 
 output "dynamodb_table" {
-  value = module.debatable_backend.dynamodb_table_name
+  value = module.fairpoints_backend.dynamodb_table_name
 }

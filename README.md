@@ -1,7 +1,7 @@
-# debatable-backend
-![CI](https://github.com/ScottG489/debatable-backend/workflows/CI/badge.svg)
+# fairpoints-backend
+![CI](https://github.com/ScottG489/fairpoints-backend/workflows/CI/badge.svg)
 
-Backend for debatable frontend project
+Backend for the Fair Points frontend project
 
 ## Development
 Here is an example of developing the build in conjunction with the application locally.
@@ -19,7 +19,7 @@ TWILIO_CHAT_SERVICE_SID=<CHAT SERVICE SID HERE>
 AWS_ACCESS_KEY_ID=<AWS ACCESS KEY ID HERE>
 AWS_SECRET_ACCESS_KEY=<AWS SECRET ACCESS KEY HERE>
 docker build infra/build -t app-test && \
-docker run -it --volume "$PWD:/opt/build/debatable-backend" -v /var/run/docker.sock:/var/run/docker.sock app-test '{"ID_RSA": "'"$ID_RSA_CONTENTS_BASE64"'", "AWS_CREDENTIALS": "'"$AWS_CREDENTIALS_CONTENTS_BASE64"'", "MAIN_KEY_PAIR": "'"$MAINKEYPAIR_CONTENTS_BASE64"'", "DOCKER_CONFIG": "'"$DOCKER_CONFIG_CONTENTS_BASE64"'", "TWILIO_ACCOUNT_SID": "'"$TWILIO_ACCOUNT_SID"'", "TWILIO_API_KEY": "'"$TWILIO_API_KEY"'", "TWILIO_API_SECRET": "'"$TWILIO_API_SECRET"'", "TWILIO_CHAT_SERVICE_SID": "'"$TWILIO_CHAT_SERVICE_SID"'"}'
+docker run -it --volume "$PWD:/opt/build/fairpoints-backend" -v /var/run/docker.sock:/var/run/docker.sock app-test '{"ID_RSA": "'"$ID_RSA_CONTENTS_BASE64"'", "AWS_CREDENTIALS": "'"$AWS_CREDENTIALS_CONTENTS_BASE64"'", "MAIN_KEY_PAIR": "'"$MAINKEYPAIR_CONTENTS_BASE64"'", "DOCKER_CONFIG": "'"$DOCKER_CONFIG_CONTENTS_BASE64"'", "TWILIO_ACCOUNT_SID": "'"$TWILIO_ACCOUNT_SID"'", "TWILIO_API_KEY": "'"$TWILIO_API_KEY"'", "TWILIO_API_SECRET": "'"$TWILIO_API_SECRET"'", "TWILIO_CHAT_SERVICE_SID": "'"$TWILIO_CHAT_SERVICE_SID"'"}'
 ```
 
 1. Initialize the secrets as envars (these will be passed in as the arguments to the container)

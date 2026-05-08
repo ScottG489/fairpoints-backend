@@ -53,9 +53,9 @@ read -r -d '\' JSON_BODY <<- EOM
   }\\
 EOM
 
-LOCAL_IMAGE_TAG="debatable-backend-build-test-$(uuidgen | cut -c -8)"
+LOCAL_IMAGE_TAG="fairpoints-backend-build-test-$(uuidgen | cut -c -8)"
 docker build infra/build -t $LOCAL_IMAGE_TAG && \
 docker run -it \
   --runtime=sysbox-runc \
-  --volume "$PWD:/opt/build/debatable-backend" \
+  --volume "$PWD:/opt/build/fairpoints-backend" \
   $LOCAL_IMAGE_TAG "$JSON_BODY"

@@ -11,9 +11,9 @@ set -x
 dockerd > /var/log/dockerd.log 2>&1 &
 sleep 3
 
-declare -r _PROJECT_NAME='debatable-backend'
-declare -r _GIT_REPO='git@github.com:ScottG489/debatable-backend.git'
-declare -r _TFSTATE_BUCKET_NAME='tfstate-debatable-backend'
+declare -r _PROJECT_NAME='fairpoints-backend'
+declare -r _GIT_REPO='git@github.com:ScottG489/fairpoints-backend.git'
+declare -r _TFSTATE_BUCKET_NAME='tfstate-fairpoints-backend'
 declare -r _RUN_TASK=$(jq -r .RUN_TASK <<< "$1")
 declare -r _GIT_BRANCH=$(jq -r .GIT_BRANCH <<< "$1")
 declare -r _DOCKER_IMAGE_TAG=$(jq -r .DOCKER_IMAGE_TAG <<< "$1")

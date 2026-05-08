@@ -5,7 +5,7 @@ readonly ID_RSA=$1
 readonly DOCKER_CONFIG=$2
 readonly GIT_BRANCH=${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}
 readonly DOCKER_IMAGE_TAG=$([[ $GIT_BRANCH == "master" ]] && echo -n "latest" || sed 's/[^a-zA-Z0-9]/-/g' <<< "$GIT_BRANCH")
-readonly DOCKER_IMAGE_NAME="scottg489/debatable-backend-build:$DOCKER_IMAGE_TAG"
+readonly DOCKER_IMAGE_NAME="scottg489/fairpoints-backend-build:$DOCKER_IMAGE_TAG"
 
 read -r -d '' JSON_BODY <<- EOM
   {

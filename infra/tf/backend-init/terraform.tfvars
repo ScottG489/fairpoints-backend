@@ -1,1 +1,1 @@
-bucket_name = "tfstate-debatable-backend"
+bucket_name = "tfstate-fairpoints-backend"

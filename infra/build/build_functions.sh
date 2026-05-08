@@ -37,13 +37,13 @@ build_test() {
 
   ./gradlew --info build unitTest install
 
-  docker build -t scottg489/debatable-backend .
+  docker build -t scottg489/fairpoints-backend .
 }
 
 push_application() {
   declare -r DOCKER_IMAGE_TAG=$1
-  docker tag scottg489/debatable-backend scottg489/debatable-backend:$DOCKER_IMAGE_TAG
-  docker push scottg489/debatable-backend:$DOCKER_IMAGE_TAG
+  docker tag scottg489/fairpoints-backend scottg489/fairpoints-backend:$DOCKER_IMAGE_TAG
+  docker push scottg489/fairpoints-backend:$DOCKER_IMAGE_TAG
 }
 
 tf_backend_init() {
@@ -92,10 +92,10 @@ tf_prod_apply() {
 
   terraform init
 
-  readonly EXISTING_ZONE_ID=$(aws route53 list-hosted-zones-by-name --max-items 1 --dns-name debate-table.com \
+  readonly EXISTING_ZONE_ID=$(aws route53 list-hosted-zones-by-name --max-items 1 --dns-name fairpoints.chat \
   | jq --raw-output '.HostedZones[0].Id')
   [[ -n $EXISTING_ZONE_ID ]]
-  terraform import module.debatable_backend.aws_route53_zone.r53_zone "$EXISTING_ZONE_ID" || true
+  terraform import module.fairpoints_backend.aws_route53_zone.r53_zone "$EXISTING_ZONE_ID" || true
 
   terraform plan
   terraform apply --auto-approve
