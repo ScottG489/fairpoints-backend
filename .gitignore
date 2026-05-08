@@ -1,5 +1,7 @@
 config-local.yml
+local-config.yml
 .env.local
+.continues*
 
 .gradle
 /build
