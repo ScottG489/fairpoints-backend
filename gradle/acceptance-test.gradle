@@ -16,5 +16,5 @@ task acceptanceTest(type: Test) {
 }
 
 dependencies {
-    testImplementation 'io.rest-assured:rest-assured:4.3.0'
+    testImplementation 'io.rest-assured:rest-assured:4.5.1'
 }
