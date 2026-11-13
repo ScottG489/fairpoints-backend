@@ -12,7 +12,7 @@ terraform {
 
 module "helpers_spot_instance_ssh" {
   source        = "ScottG489/helpers/aws//modules/spot_instance_ssh"
-  version       = "0.0.5"
+  version       = "0.1.12"
   name          = var.domain_name
   public_key    = var.public_key
   instance_type = var.instance_type
